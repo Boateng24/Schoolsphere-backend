@@ -1,0 +1,197 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  rollId               String            @id @default(cuid())
+  username             String
+  firstName            String
+  lastName             String
+  middleName           String?
+  email                String            @unique
+  password             String
+  dateOfBirth          DateTime?
+  contact              String?
+  address              StudentAddress?
+  gender               Gender
+  schoolClass          SchoolClass[]
+  teacher              StudentTeacher[]
+  admissionDate        DateTime?
+  religion             String?
+  nationality          String?
+  guardianName         String
+  relationsToGuardian  String?
+  medicalConditions    String?
+  allergies            String?
+  photo                String?
+  previousSchool       String?
+  academicRecords      AcademicRecords[]
+  status               StudentStatus     @default(ACTIVE)
+  role                 ROLE              @default(STUDENT)
+  emergencyContact     String?
+  emergencyContactName String?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  @@index([firstName, lastName, email])
+}
+
+model Teacher {
+  employeeId           String            @id @default(cuid())
+  username             String
+  firstName            String
+  lastName             String
+  middleName           String?
+  email                String            @unique
+  dateOfBirth          DateTime?
+  contact              String
+  address              TeacherAddress?
+  gender               Gender
+  qualification        String?
+  specialization       String?
+  employmentDate       DateTime?
+  nationality          String?
+  religion             String?
+  previousSchool       String?
+  yearsOfExperience    Int?
+  photo                String?
+  status               TeacherStatus     @default(ACTIVE)
+  role                 ROLE              @default(TEACHER)
+  biography            String?
+  isAdmin              Boolean           @default(false)
+  schoolClass          SchoolClass[]
+  student              StudentTeacher[]
+  studentRecords       AcademicRecords[]
+  emergencyContact     String?
+  emergencyContactName String?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  @@index([firstName, lastName, email])
+}
+
+model StudentTeacher {
+  student   Student  @relation(fields: [studentId], references: [rollId])
+  studentId String
+  teacher   Teacher  @relation(fields: [teacherId], references: [employeeId])
+  teacherId String
+  createdAt DateTime @default(now())
+
+  @@id([studentId, teacherId])
+}
+
+model StudentAddress {
+  GPS       String?
+  location  String?
+  student   Student  @relation(fields: [studentId], references: [rollId], onDelete: Cascade)
+  studentId String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([studentId])
+  @@index([GPS, location])
+}
+
+model TeacherAddress {
+  GPS       String?
+  location  String?
+  teacher   Teacher  @relation(fields: [teacherId], references: [employeeId], onDelete: Cascade)
+  teacherId String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([teacherId])
+  @@index([GPS, location])
+}
+
+model SchoolClass {
+  classType   ClassCategory
+  schoolClass ClassType
+  studentId   String
+  student     Student       @relation(fields: [studentId], references: [rollId])
+  teacherId   String
+  teacher     Teacher       @relation(fields: [teacherId], references: [employeeId])
+
+  @@id([studentId, teacherId])
+  @@index([classType, schoolClass])
+}
+
+model AcademicRecords {
+  academicYear    DateTime
+  term            TERM
+  courseCode      String?
+  courseName      String
+  courseTeacher   Teacher  @relation(fields: [teacherId], references: [employeeId])
+  teacherId       String
+  studentId       String
+  student         Student  @relation(fields: [studentId], references: [rollId])
+  grades          String
+  studentPosition String?
+  teacherComments String[]
+  recommendations String
+
+  @@id([studentId, term, academicYear])
+  @@index([term, courseName])
+}
+
+enum ClassCategory {
+  KINGDERGARTEN
+  PRIMARY
+  JHS
+}
+
+enum ClassType {
+  KINGDERGARTEN1
+  KINGDERGARTEN2
+  PRIMARY1
+  PRIMARY2
+  PRIMARY3
+  PRIMARY4
+  PRIMARY5
+  PRIMARY6
+  JHS1
+  JHS2
+  JHS3
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum StudentStatus {
+  ACTIVE
+  GRADUATED
+  DROPPEDOUT
+}
+
+enum TeacherStatus {
+  ACTIVE
+  ONLEAVE
+  RETIRED
+}
+
+enum TERM {
+  FIRSTTERM
+  SECONDTERM
+  THIRDTERM
+}
+
+enum ROLE {
+  STUDENT
+  TEACHER
+  HEADMASTER
+  PROPRIETOR
+  ADMIN
+  OTHER
+}
