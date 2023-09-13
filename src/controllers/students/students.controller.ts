@@ -24,6 +24,11 @@ export class StudentsController {
     return this.studentservice.createStudentAddress(body, params);
   }
 
+  @Get('/allStudents')
+  async findallStudents() {
+    return this.studentservice.allStudents();
+  }
+
   @Get('/:studentId')
   async findStudent(@Param() params: StudentAddressParams) {
     return this.studentservice.getStudent(params);
@@ -40,10 +45,5 @@ export class StudentsController {
     @Body() addressData: StudentAddressDto,
   ) {
     return this.studentservice.updateStudentAddress(studentId, addressData);
-  }
-
-  @Get('/allStudents')
-  async findallStudents() {
-    return this.studentservice.allStudents();
   }
 }

@@ -109,7 +109,12 @@ export class StudentsService {
   }
 
   async allStudents() {
-    const studentsFound = await this.prisma.student.findMany();
-    return { studenst: studentsFound };
+    try {
+      const studentsFound = await this.prisma.student.findMany();
+      return { students: studentsFound };
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      throw new Error('Error fetching students from the database.');
+    }
   }
 }
