@@ -107,4 +107,9 @@ export class StudentsService {
     });
     return { message: 'Student address updated successfully' };
   }
+
+  async allStudents() {
+    const studentsFound = await this.prisma.student.findMany();
+    return { studenst: studentsFound };
+  }
 }

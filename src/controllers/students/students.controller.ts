@@ -41,4 +41,9 @@ export class StudentsController {
   ) {
     return this.studentservice.updateStudentAddress(studentId, addressData);
   }
+
+  @Get('/allStudents')
+  async findallStudents() {
+    return this.studentservice.allStudents();
+  }
 }
