@@ -75,7 +75,12 @@ export class AuthService {
 
       const payload = { id: foundUser.rollId, roll: foundUser.role };
       const userToken = await this.jwtService.signAsync(payload);
-      return { loggedInUser: foundUser.username, accessToken: userToken };
+      return {
+        rollId: foundUser.rollId,
+        loggedInUser: foundUser.username,
+        accessToken: userToken,
+        userRole: foundUser.role,
+      };
     } catch (error) {
       throw new InternalServerErrorException(
         'An error occured while logging in a user',
