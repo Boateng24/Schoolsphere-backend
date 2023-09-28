@@ -18,7 +18,7 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new PrismaErrorFilter());
   app.enableCors({
-    origin: '',
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   });
   setupSwagger(app);

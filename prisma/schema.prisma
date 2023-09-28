@@ -173,6 +173,7 @@ enum StudentStatus {
   ACTIVE
   GRADUATED
   DROPPEDOUT
+  DEACTIVATED
 }
 
 enum TeacherStatus {
@@ -193,5 +194,5 @@ enum ROLE {
   HEADMASTER
   PROPRIETOR
   ADMIN
-  OTHER
+  NONTEACHING
 }
