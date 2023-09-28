@@ -35,8 +35,8 @@ model Student {
   photo                String?
   previousSchool       String?
   academicRecords      AcademicRecords[]
-  status               StudentStatus     @default(ACTIVE)
-  role                 ROLE              @default(STUDENT)
+  status               StudentStatus     @default(active)
+  role                 ROLE              @default(student)
   emergencyContact     String?
   emergencyContactName String?
   createdAt            DateTime          @default(now())
@@ -64,8 +64,8 @@ model Teacher {
   previousSchool       String?
   yearsOfExperience    Int?
   photo                String?
-  status               TeacherStatus     @default(ACTIVE)
-  role                 ROLE              @default(TEACHER)
+  status               TeacherStatus     @default(active)
+  role                 ROLE              @default(teacher)
   biography            String?
   isAdmin              Boolean           @default(false)
   schoolClass          SchoolClass[]
@@ -144,55 +144,54 @@ model AcademicRecords {
 }
 
 enum ClassCategory {
-  KINGDERGARTEN
-  PRIMARY
-  JHS
+  kindergarten
+  primary
+  jhs
 }
 
 enum ClassType {
-  KINGDERGARTEN1
-  KINGDERGARTEN2
-  PRIMARY1
-  PRIMARY2
-  PRIMARY3
-  PRIMARY4
-  PRIMARY5
-  PRIMARY6
-  JHS1
-  JHS2
-  JHS3
+  kindergarten1
+  kindergarten2
+  primary1
+  primary2
+  primary3
+  primary4
+  primary5
+  primary6
+  jhs1
+  jhs2
+  jhs3
 }
 
 enum Gender {
-  MALE
-  FEMALE
-  OTHER
+  male
+  female
 }
 
 enum StudentStatus {
-  ACTIVE
-  GRADUATED
-  DROPPEDOUT
-  DEACTIVATED
+  active
+  graduated
+  droppedout
+  deactivated
 }
 
 enum TeacherStatus {
-  ACTIVE
-  ONLEAVE
-  RETIRED
+  active
+  onleave
+  retired
 }
 
 enum TERM {
-  FIRSTTERM
-  SECONDTERM
-  THIRDTERM
+  firstterm
+  secondterm
+  thirdterm
 }
 
 enum ROLE {
-  STUDENT
-  TEACHER
-  HEADMASTER
-  PROPRIETOR
-  ADMIN
-  NONTEACHING
+  student
+  teacher
+  headmaster
+  proprietro
+  admin
+  nonteaching
 }
