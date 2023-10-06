@@ -23,7 +23,7 @@
     "docker-up": "docker-compose -f docker-compose.yml up",
     "docker-up-detach": "docker-compose -f docker-compose.yml up -d",
     "docker-build": "docker-compose -f docker-compose.yml build --no-cache",
-    "migrate-docker": "docker-compose exec app npx prisma migrate deploy"
+    "migrate-docker": "docker-compose exec app yarn run prisma migrate deploy"
   },
   "dependencies": {
     "@nestjs/cache-manager": "^2.1.0",
