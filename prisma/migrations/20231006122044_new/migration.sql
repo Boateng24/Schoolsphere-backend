@@ -1,24 +1,28 @@
 -- CreateEnum
-CREATE TYPE "ClassCategory" AS ENUM ('KINGDERGARTEN', 'PRIMARY', 'JHS');
+CREATE TYPE "ClassCategory" AS ENUM ('kindergarten', 'primary', 'jhs');
 
 -- CreateEnum
-CREATE TYPE "ClassType" AS ENUM ('KINGDERGARTEN1', 'KINGDERGARTEN2', 'PRIMARY1', 'PRIMARY2', 'PRIMARY3', 'PRIMARY4', 'PRIMARY5', 'PRIMARY6', 'JHS1', 'JHS2', 'JHS3');
+CREATE TYPE "ClassType" AS ENUM ('kindergarten1', 'kindergarten2', 'primary1', 'primary2', 'primary3', 'primary4', 'primary5', 'primary6', 'jhs1', 'jhs2', 'jhs3');
 
 -- CreateEnum
-CREATE TYPE "Gender" AS ENUM ('MALE', 'FEMALE', 'OTHER');
+CREATE TYPE "Gender" AS ENUM ('male', 'female');
 
 -- CreateEnum
-CREATE TYPE "StudentStatus" AS ENUM ('ACTIVE', 'GRADUATED', 'DROPPEDOUT');
+CREATE TYPE "StudentStatus" AS ENUM ('active', 'graduated', 'droppedout', 'deactivated');
 
 -- CreateEnum
-CREATE TYPE "TeacherStatus" AS ENUM ('ACTIVE', 'ONLEAVE', 'RETIRED');
+CREATE TYPE "TeacherStatus" AS ENUM ('active', 'onleave', 'retired');
 
 -- CreateEnum
-CREATE TYPE "TERM" AS ENUM ('FIRSTTERM', 'SECONDTERM', 'THIRDTERM');
+CREATE TYPE "TERM" AS ENUM ('firstterm', 'secondterm', 'thirdterm');
+
+-- CreateEnum
+CREATE TYPE "ROLE" AS ENUM ('student', 'teacher', 'headmaster', 'proprietro', 'admin', 'nonteaching');
 
 -- CreateTable
 CREATE TABLE "Student" (
     "rollId" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "middleName" TEXT,
@@ -31,12 +35,14 @@ CREATE TABLE "Student" (
     "religion" TEXT,
     "nationality" TEXT,
     "guardianName" TEXT NOT NULL,
+    "guardianNumber" TEXT,
     "relationsToGuardian" TEXT,
     "medicalConditions" TEXT,
     "allergies" TEXT,
     "photo" TEXT,
     "previousSchool" TEXT,
-    "status" "StudentStatus" NOT NULL DEFAULT 'ACTIVE',
+    "status" "StudentStatus" NOT NULL DEFAULT 'active',
+    "role" "ROLE" NOT NULL DEFAULT 'student',
     "emergencyContact" TEXT,
     "emergencyContactName" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -48,6 +54,7 @@ CREATE TABLE "Student" (
 -- CreateTable
 CREATE TABLE "Teacher" (
     "employeeId" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "middleName" TEXT,
@@ -63,7 +70,8 @@ CREATE TABLE "Teacher" (
     "previousSchool" TEXT,
     "yearsOfExperience" INTEGER,
     "photo" TEXT,
-    "status" "TeacherStatus" NOT NULL DEFAULT 'ACTIVE',
+    "status" "TeacherStatus" NOT NULL DEFAULT 'active',
+    "role" "ROLE" NOT NULL DEFAULT 'teacher',
     "biography" TEXT,
     "isAdmin" BOOLEAN NOT NULL DEFAULT false,
     "emergencyContact" TEXT,
