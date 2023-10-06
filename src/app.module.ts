@@ -10,6 +10,11 @@ import { AuthService } from './services/auth/auth.service';
 import { StudentsService } from './services/students/students.service';
 import { StudentsController } from './controllers/students/students.controller';
 import { JwtModule } from '@nestjs/jwt';
+import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
+import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+// import { RoleGuard } from './guards/role.guard';
+// import { AuthGuard } from './guards/authguard.guard';
 
 @Module({
   imports: [
@@ -23,9 +28,25 @@ import { JwtModule } from '@nestjs/jwt';
       }),
       inject: [ConfigService],
     }),
+    CacheModule.register({
+      isGlobal: true,
+    }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
   ],
   controllers: [AppController, AuthController, StudentsController],
-  providers: [AppService, DbconnectionService, AuthService, StudentsService],
+  providers: [
+    AppService,
+    DbconnectionService,
+    AuthService,
+    StudentsService,
+    { provide: APP_INTERCEPTOR, useClass: CacheInterceptor },
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

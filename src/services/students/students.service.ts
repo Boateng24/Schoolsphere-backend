@@ -4,19 +4,13 @@ import {
   Param,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  StudentAddressDto,
-  StudentAddressParams,
-} from 'src/Dtos/other-authdtos.dto';
+import { StudentAddressDto, StudentParams } from 'src/Dtos/other-authdtos.dto';
 import { PrismaService } from 'src/db-prisma/db-prisma/db-prisma.service';
 
 @Injectable()
 export class StudentsService {
   constructor(private readonly prisma: PrismaService) {}
-  async createStudentAddress(
-    body: StudentAddressDto,
-    params: StudentAddressParams,
-  ) {
+  async createStudentAddress(body: StudentAddressDto, params: StudentParams) {
     const addressExists = await this.prisma.studentAddress.findFirst({
       where: {
         studentId: params.studentId,
@@ -35,7 +29,7 @@ export class StudentsService {
     return { createdStdAddress: newstudentAddress };
   }
 
-  async getStudent(params: StudentAddressParams) {
+  async getStudent(params: StudentParams) {
     const findStudent = await this.prisma.student.findFirst({
       where: {
         rollId: params.studentId,
@@ -49,6 +43,7 @@ export class StudentsService {
         email: true,
         contact: true,
         gender: true,
+        role: true,
         address: true,
         dateOfBirth: true,
         guardianName: true,
@@ -74,7 +69,7 @@ export class StudentsService {
     return { findStudent };
   }
 
-  async deleteStudent(@Param() studentaddress: StudentAddressParams) {
+  async deleteStudentAddress(@Param() studentaddress: StudentParams) {
     await this.prisma.studentAddress.delete({
       where: {
         studentId: studentaddress.studentId,
@@ -83,10 +78,7 @@ export class StudentsService {
     return { message: 'Student address deleted successfully' };
   }
 
-  async updateStudentAddress(
-    params: StudentAddressParams,
-    body: StudentAddressDto,
-  ) {
+  async updateStudentAddress(params: StudentParams, body: StudentAddressDto) {
     const addressExists = await this.prisma.studentAddress.findFirst({
       where: {
         studentId: params.studentId,
@@ -115,6 +107,19 @@ export class StudentsService {
     } catch (error) {
       console.error('Error fetching students:', error);
       throw new Error('Error fetching students from the database.');
+    }
+  }
+
+  async deleteStudent(@Param() students: StudentParams) {
+    try {
+      await this.prisma.student.delete({
+        where: {
+          rollId: students.studentId,
+        },
+      });
+      return { message: 'Student deleted successfully' };
+    } catch (error) {
+      throw new Error('Error deleting a student');
     }
   }
 }

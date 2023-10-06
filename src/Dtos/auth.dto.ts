@@ -1,4 +1,4 @@
-import { Gender, StudentStatus } from '@prisma/client';
+import { Gender, StudentStatus, ROLE } from '@prisma/client';
 import {
   IsDateString,
   IsEmail,
@@ -61,6 +61,10 @@ export class StudentDto {
 
   @IsEnum(Gender)
   gender: Gender;
+
+  @IsEnum(ROLE)
+  @IsOptional()
+  role: ROLE;
 
   @IsArray()
   @ValidateNested({ each: true })

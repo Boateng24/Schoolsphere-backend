@@ -29,6 +29,7 @@ model Student {
   religion             String?
   nationality          String?
   guardianName         String
+  guardianNumber       String?
   relationsToGuardian  String?
   medicalConditions    String?
   allergies            String?

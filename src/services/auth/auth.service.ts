@@ -38,6 +38,7 @@ export class AuthService {
           email: student.email,
           password: hashedPassword,
           gender: student.gender,
+          role: student.role,
           guardianName: student.guardianName,
           address: {
             create: {
@@ -73,7 +74,7 @@ export class AuthService {
         throw new ConflictException({ message: 'Invalid Credentials' });
       }
 
-      const payload = { id: foundUser.rollId, roll: foundUser.role };
+      const payload = { id: foundUser.rollId, role: foundUser.role };
       const userToken = await this.jwtService.signAsync(payload);
       return {
         rollId: foundUser.rollId,

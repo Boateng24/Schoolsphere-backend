@@ -18,7 +18,7 @@ export class StudentAddressDto {
   location?: string;
 }
 
-export class StudentAddressParams {
+export class StudentParams {
   @IsString()
   studentId: string;
 }
