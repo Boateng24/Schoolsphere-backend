@@ -12,11 +12,11 @@ import { StudentAddressDto, StudentParams } from 'src/Dtos/other-authdtos.dto';
 import { StudentsService } from 'src/services/students/students.service';
 import { Roles } from '../../decorators/role.decorators';
 import { Role } from '../../@types/types';
-import { RoleGuard } from 'src/guards/role.guard';
-import { AuthGuard } from 'src/guards/authguard.guard';
+// import { RoleGuard } from 'src/guards/role.guard';
+// import { AuthGuard } from 'src/guards/authguard.guard';
 
 @Controller({ path: 'students', version: '1' })
-@UseGuards(AuthGuard, RoleGuard)
+// @UseGuards(AuthGuard, RoleGuard)
 export class StudentsController {
   constructor(private readonly studentservice: StudentsService) {}
   @Post('/studentAddress/:studentId')
@@ -28,7 +28,7 @@ export class StudentsController {
   }
 
   @Get('/allStudents')
-  @Roles(Role.ADMIN)
+  // @Roles(Role.ADMIN)
   async findallStudents() {
     return this.studentservice.allStudents();
   }
