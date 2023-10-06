@@ -7,6 +7,7 @@ export const setupSwagger = (app) => {
       'This is the official API documentation of the schoolsphere app',
     )
     .setVersion('1.0')
+    .addBearerAuth()
     .addTag('SCHOOLSPHERE')
     .build();
   const document = SwaggerModule.createDocument(app, config);
