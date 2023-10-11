@@ -40,6 +40,7 @@ model Student {
   role                 ROLE              @default(student)
   emergencyContact     String?
   emergencyContactName String?
+  ticket               Tickets?
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
 
@@ -72,6 +73,7 @@ model Teacher {
   schoolClass          SchoolClass[]
   student              StudentTeacher[]
   studentRecords       AcademicRecords[]
+  notice               Notification?
   emergencyContact     String?
   emergencyContactName String?
   createdAt            DateTime          @default(now())
@@ -144,10 +146,34 @@ model AcademicRecords {
   @@index([term, courseName])
 }
 
+
+model Tickets {
+  ticketId Int @id @default(autoincrement())
+  ticketName  String
+  reason  String
+  ticketItem  String
+  ticketDate  DateTime
+  ticketStatus Status
+  student Student @relation(fields: [studentId], references: [rollId], onDelete: Cascade)
+  studentId  String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
 enum ClassCategory {
   kindergarten
   primary
   jhs
+}
+
+model Notification {
+  id Int @id @default(autoincrement())
+  content String
+  isRead Boolean @default(false)
+  userId String @unique
+  user  Teacher @relation(fields: [userId], references: [employeeId], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 enum ClassType {
@@ -195,4 +221,11 @@ enum ROLE {
   proprietro
   admin
   nonteaching
+}
+
+
+enum Status {
+  pending
+  approved
+  rejected
 }
