@@ -11,16 +11,6 @@ export class TicketController {
     return this.ticketservice.createTicket(body, params);
   }
 
-  @Post('/approval/:ticketId')
-  async ticketApproval(@Param() params: TicketParams) {
-    return this.ticketservice.approveTicket(params);
-  }
-
-  @Post('/rejection/:ticketId')
-  async ticketRejection(@Param() params: TicketParams) {
-    return this.ticketservice.rejectTicket(params);
-  }
-
   @Get('/allTickets')
   async fetchAllTickets() {
     return this.ticketservice.getAllTickets();
@@ -29,6 +19,16 @@ export class TicketController {
   @Get('/:ticketId')
   async fetchTicket(@Param() params: TicketParams) {
     return this.ticketservice.getTicket(params);
+  }
+
+  @Post('/approval/:ticketId')
+  async ticketApproval(@Param() params: TicketParams) {
+    return this.ticketservice.approveTicket(params);
+  }
+
+  @Post('/rejection/:ticketId')
+  async ticketRejection(@Param() params: TicketParams) {
+    return this.ticketservice.rejectTicket(params);
   }
 
   @Delete('/:ticketId')
