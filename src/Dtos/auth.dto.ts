@@ -133,14 +133,8 @@ export class StudentDto {
 
 export class LoginDto {
   @IsString()
-  @IsOptional()
-  email?: string;
-
-  @IsString()
-  @MinLength(6)
   password: string;
 
   @IsString()
-  @IsOptional()
-  username?: string;
+  username: string;
 }

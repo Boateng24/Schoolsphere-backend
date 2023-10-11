@@ -58,11 +58,11 @@ export class AuthService {
     }
   }
 
-  async loginStudent(@Body() { email, password, username }: LoginDto) {
+  async loginStudent(@Body() { username, password }: LoginDto) {
     try {
       const foundUser = await this.prisma.student.findFirst({
         where: {
-          OR: [{ email }, { username }],
+          OR: [{ email: username }, { username }],
         },
       });
       if (!foundUser) {

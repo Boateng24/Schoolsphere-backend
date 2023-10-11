@@ -15,6 +15,9 @@ import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 // import { RoleGuard } from './guards/role.guard';
 // import { AuthGuard } from './guards/authguard.guard';
+import { TicketController } from './controllers/ticket/ticket.controller';
+import { TicketService } from './services/ticket/ticket.service';
+import { NotificationService } from './services/notification/notification.service';
 
 @Module({
   imports: [
@@ -38,7 +41,12 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
       },
     ]),
   ],
-  controllers: [AppController, AuthController, StudentsController],
+  controllers: [
+    AppController,
+    AuthController,
+    StudentsController,
+    TicketController,
+  ],
   providers: [
     AppService,
     DbconnectionService,
@@ -46,6 +54,8 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
     StudentsService,
     { provide: APP_INTERCEPTOR, useClass: CacheInterceptor },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
+    TicketService,
+    NotificationService,
   ],
 })
 export class AppModule implements NestModule {
