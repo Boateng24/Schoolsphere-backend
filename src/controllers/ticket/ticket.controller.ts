@@ -6,14 +6,15 @@ import { StudentParams } from 'src/Dtos/other-authdtos.dto';
 @Controller({ path: 'ticket', version: '1' })
 export class TicketController {
   constructor(private readonly ticketservice: TicketService) {}
-  @Post('/:studentId')
-  async createTicket(@Body() body: TicketDto, @Param() params: StudentParams) {
-    return this.ticketservice.createTicket(body, params);
-  }
 
   @Get('/allTickets')
   async fetchAllTickets() {
     return this.ticketservice.getAllTickets();
+  }
+
+  @Post('/:studentId')
+  async createTicket(@Body() body: TicketDto, @Param() params: StudentParams) {
+    return this.ticketservice.createTicket(body, params);
   }
 
   @Get('/:ticketId')
