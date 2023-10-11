@@ -79,6 +79,9 @@ export class TicketService {
 
   async getAllTickets() {
     const allTickets = await this.prisma.tickets.findMany();
+    if (!allTickets) {
+      return { message: 'No tickets found' };
+    }
     return { allTickets, message: 'All Tickets Fetched Successfully' };
   }
 
