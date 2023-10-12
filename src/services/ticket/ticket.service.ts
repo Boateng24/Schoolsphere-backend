@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Status, TicketDto, TicketParams } from 'src/Dtos/ticket.dto';
 import { PrismaService } from 'src/db-prisma/db-prisma/db-prisma.service';
 import { StudentParams } from 'src/Dtos/other-authdtos.dto';
-import { ConflictException } from '@nestjs/common/exceptions';
 import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
@@ -12,15 +11,6 @@ export class TicketService {
     private readonly notify: NotificationService,
   ) {}
   async createTicket(ticket: TicketDto, student: StudentParams) {
-    const existingTicket = await this.prisma.tickets.findFirst({
-      where: {
-        studentId: student.studentId,
-      },
-    });
-    if (existingTicket) {
-      throw new ConflictException('Ticket already exist for this student');
-    }
-
     const studentFound = await this.prisma.student.findFirst({
       where: { rollId: student.studentId },
     });
