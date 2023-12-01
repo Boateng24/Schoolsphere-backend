@@ -10,6 +10,7 @@ import {
   ValidateNested,
   IsArray,
   MinLength,
+  IsNumber,
 } from 'class-validator';
 
 import { Type } from 'class-transformer';
@@ -137,4 +138,9 @@ export class LoginDto {
 
   @IsString()
   username: string;
+}
+
+export class StudentParams {
+  @IsString()
+  studentId: string;
 }

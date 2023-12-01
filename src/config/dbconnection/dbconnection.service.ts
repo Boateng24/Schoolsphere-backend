@@ -10,6 +10,7 @@ export class DbconnectionService {
     try {
       await this.prisma.$connect().then(() => {
         this.logger.log('Database connected successfully');
+        this.logger.log(`Server listening on port:${process.env.PORT}`);
       });
     } catch (error) {
       this.logger.log(error);

@@ -68,7 +68,7 @@ export class TicketService {
   }
 
   async getAllTickets() {
-    const allTickets = await this.prisma.tickets.findMany();
+    const allTickets = await this.prisma.tickets.findMany({});
     if (!allTickets) {
       return { message: 'No tickets found' };
     }
@@ -82,5 +82,14 @@ export class TicketService {
       },
     });
     return { message: 'Ticket Deleted Successfully' };
+  }
+
+  async getAllTicketsofStudent(Id: StudentParams) {
+    const studentTickets = await this.prisma.tickets.findMany({
+      where: {
+        studentId: Id.studentId,
+      },
+    });
+    return { studentTickets, message: 'Individual students tickets fetched' };
   }
 }

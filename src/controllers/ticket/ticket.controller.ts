@@ -36,4 +36,9 @@ export class TicketController {
   async deleteTicket(@Param() params: TicketParams) {
     return this.ticketservice.deleteTicket(params);
   }
+
+  @Get('/tickets/:studentId')
+  async getStudentTickets(@Param() params: StudentParams) {
+    return this.ticketservice.getAllTicketsofStudent(params);
+  }
 }
