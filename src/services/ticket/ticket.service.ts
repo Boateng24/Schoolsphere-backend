@@ -95,4 +95,9 @@ export class TicketService {
     });
     return { studentTickets, message: 'Individual students tickets fetched' };
   }
+
+  async allTicketDelete() {
+    await this.prisma.tickets.deleteMany();
+    return { message: 'All tickets deleted' };
+  }
 }
