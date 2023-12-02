@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Status, TicketDto, TicketParams } from 'src/Dtos/ticket.dto';
 import { PrismaService } from 'src/db-prisma/db-prisma/db-prisma.service';
 import { StudentParams } from 'src/Dtos/other-authdtos.dto';
@@ -14,6 +14,9 @@ export class TicketService {
     const studentFound = await this.prisma.student.findFirst({
       where: { rollId: student.studentId },
     });
+    if (!studentFound) {
+      throw new NotFoundException('User not found');
+    }
     const newTicket = await this.prisma.tickets.create({
       data: {
         ...ticket,

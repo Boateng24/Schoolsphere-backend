@@ -225,7 +225,7 @@ enum ROLE {
 
 
 enum Status {
-  pending
-  approved
-  rejected
+  Pending
+  Approved
+  Rejected
 }
