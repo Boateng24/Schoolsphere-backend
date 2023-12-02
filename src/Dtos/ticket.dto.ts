@@ -1,9 +1,9 @@
 import { IsString, IsDate, IsNumber } from 'class-validator';
 
 export enum Status {
-  PENDING = 'pending',
-  APPROVED = 'approved',
-  REJECTED = 'rejected',
+  PENDING = 'Pending',
+  APPROVED = 'Approved',
+  REJECTED = 'Rejected',
 }
 
 export class TicketDto {
