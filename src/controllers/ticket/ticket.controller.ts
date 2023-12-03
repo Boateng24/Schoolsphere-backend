@@ -1,6 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { TicketService } from 'src/services/ticket/ticket.service';
-import { TicketDto, TicketParams } from 'src/Dtos/ticket.dto';
+import { TicketDto, TicketParams, TicketUpdateDto } from 'src/Dtos/ticket.dto';
 import { StudentParams } from 'src/Dtos/other-authdtos.dto';
 
 @Controller({ path: 'ticket', version: '1' })
@@ -31,6 +39,10 @@ export class TicketController {
   async ticketRejection(@Param() params: TicketParams) {
     return this.ticketservice.rejectTicket(params);
   }
+  @Delete('/tickets')
+  async ticketsDelete() {
+    return this.ticketservice.allTicketDelete();
+  }
 
   @Delete('/:ticketId')
   async deleteTicket(@Param() params: TicketParams) {
@@ -42,8 +54,11 @@ export class TicketController {
     return this.ticketservice.getAllTicketsofStudent(params);
   }
 
-  @Delete('/tickets')
-  async ticketsDelete() {
-    return this.ticketservice.allTicketDelete();
+  @Patch('/:ticketId')
+  async updateTicket(
+    @Body() ticket: TicketUpdateDto,
+    @Param() params: TicketParams,
+  ) {
+    return this.ticketservice.updateTicket(ticket, params);
   }
 }

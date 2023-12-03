@@ -1,5 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Status, TicketDto, TicketParams } from 'src/Dtos/ticket.dto';
+import {
+  Status,
+  TicketDto,
+  TicketParams,
+  TicketUpdateDto,
+} from 'src/Dtos/ticket.dto';
 import { PrismaService } from 'src/db-prisma/db-prisma/db-prisma.service';
 import { StudentParams } from 'src/Dtos/other-authdtos.dto';
 import { NotificationService } from '../notification/notification.service';
@@ -99,5 +104,17 @@ export class TicketService {
   async allTicketDelete() {
     await this.prisma.tickets.deleteMany();
     return { message: 'All tickets deleted' };
+  }
+
+  async updateTicket(ticket: TicketUpdateDto, Id: TicketParams) {
+    const ticketUpdate = await this.prisma.tickets.update({
+      where: {
+        ticketId: Id.ticketId,
+      },
+      data: {
+        ...ticket,
+      },
+    });
+    return { ticketUpdate, message: 'Ticket updated successfully' };
   }
 }

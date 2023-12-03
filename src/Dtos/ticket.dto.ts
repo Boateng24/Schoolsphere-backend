@@ -1,4 +1,4 @@
-import { IsString, IsDate, IsNumber } from 'class-validator';
+import { IsString, IsDate, IsNumber, IsOptional } from 'class-validator';
 
 export enum Status {
   PENDING = 'Pending',
@@ -20,4 +20,19 @@ export class TicketDto {
 export class TicketParams {
   @IsNumber()
   ticketId: number;
+}
+
+export class TicketUpdateDto {
+  @IsString()
+  @IsOptional()
+  ticketName: string;
+  @IsString()
+  @IsOptional()
+  reason: string;
+  @IsString()
+  @IsOptional()
+  ticketItem: string;
+  @IsDate()
+  @IsOptional()
+  ticketDate: Date;
 }
