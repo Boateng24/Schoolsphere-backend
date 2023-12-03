@@ -19,6 +19,9 @@ CREATE TYPE "TERM" AS ENUM ('firstterm', 'secondterm', 'thirdterm');
 -- CreateEnum
 CREATE TYPE "ROLE" AS ENUM ('student', 'teacher', 'headmaster', 'proprietro', 'admin', 'nonteaching');
 
+-- CreateEnum
+CREATE TYPE "Status" AS ENUM ('Pending', 'Approved', 'Rejected');
+
 -- CreateTable
 CREATE TABLE "Student" (
     "rollId" TEXT NOT NULL,
@@ -139,6 +142,33 @@ CREATE TABLE "AcademicRecords" (
     CONSTRAINT "AcademicRecords_pkey" PRIMARY KEY ("studentId","term","academicYear")
 );
 
+-- CreateTable
+CREATE TABLE "Tickets" (
+    "ticketId" SERIAL NOT NULL,
+    "ticketName" TEXT NOT NULL,
+    "reason" TEXT NOT NULL,
+    "ticketItem" TEXT NOT NULL,
+    "ticketDate" TIMESTAMP(3) NOT NULL,
+    "ticketStatus" "Status" NOT NULL,
+    "studentId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Tickets_pkey" PRIMARY KEY ("ticketId")
+);
+
+-- CreateTable
+CREATE TABLE "Notification" (
+    "id" SERIAL NOT NULL,
+    "content" TEXT NOT NULL,
+    "isRead" BOOLEAN NOT NULL DEFAULT false,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Student_email_key" ON "Student"("email");
 
@@ -169,6 +199,9 @@ CREATE INDEX "SchoolClass_classType_schoolClass_idx" ON "SchoolClass"("classType
 -- CreateIndex
 CREATE INDEX "AcademicRecords_term_courseName_idx" ON "AcademicRecords"("term", "courseName");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Notification_userId_key" ON "Notification"("userId");
+
 -- AddForeignKey
 ALTER TABLE "StudentTeacher" ADD CONSTRAINT "StudentTeacher_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("rollId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -192,3 +225,9 @@ ALTER TABLE "AcademicRecords" ADD CONSTRAINT "AcademicRecords_teacherId_fkey" FO
 
 -- AddForeignKey
 ALTER TABLE "AcademicRecords" ADD CONSTRAINT "AcademicRecords_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("rollId") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Tickets" ADD CONSTRAINT "Tickets_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("rollId") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Notification" ADD CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Teacher"("employeeId") ON DELETE CASCADE ON UPDATE CASCADE;
