@@ -6,16 +6,23 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { TicketService } from 'src/services/ticket/ticket.service';
 import { TicketDto, TicketParams, TicketUpdateDto } from 'src/Dtos/ticket.dto';
 import { StudentParams } from 'src/Dtos/other-authdtos.dto';
+import { RoleGuard } from 'src/guards/role.guard';
+import { AuthGuard } from 'src/guards/authguard.guard';
+import { Roles } from '../../decorators/role.decorators';
+import { Role } from '../../@types/types';
 
 @Controller({ path: 'ticket', version: '1' })
+@UseGuards(AuthGuard, RoleGuard)
 export class TicketController {
   constructor(private readonly ticketservice: TicketService) {}
 
   @Get('/allTickets')
+  @Roles(Role.ADMIN)
   async fetchAllTickets() {
     return this.ticketservice.getAllTickets();
   }

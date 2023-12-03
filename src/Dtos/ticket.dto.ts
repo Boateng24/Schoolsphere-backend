@@ -1,4 +1,10 @@
-import { IsString, IsDate, IsNumber, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsDate,
+  IsNumber,
+  IsOptional,
+  IsNotEmpty,
+} from 'class-validator';
 
 export enum Status {
   PENDING = 'Pending',
@@ -8,12 +14,16 @@ export enum Status {
 
 export class TicketDto {
   @IsString()
+  @IsNotEmpty()
   ticketName: string;
   @IsString()
+  @IsNotEmpty()
   reason: string;
   @IsString()
+  @IsNotEmpty()
   ticketItem: string;
   @IsDate()
+  @IsOptional()
   ticketDate: Date;
 }
 
