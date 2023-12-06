@@ -22,15 +22,15 @@ import {
 } from './other-authdtos.dto';
 
 export class StudentDto {
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Username is required' })
   @IsString()
   username: string;
   @IsNotEmpty()
-  @IsString()
+  @IsString({ message: 'First name is required' })
   firstName: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsString({ message: 'Last name is required' })
   lastName: string;
 
   @IsString()
@@ -38,6 +38,7 @@ export class StudentDto {
   middleName: string;
 
   @IsEmail()
+  @IsNotEmpty({ message: 'Email is required' })
   email: string;
 
   @IsString()
@@ -134,9 +135,11 @@ export class StudentDto {
 
 export class LoginDto {
   @IsString()
+  @IsNotEmpty({ message: 'Password is required' })
   password: string;
 
   @IsString()
+  @IsNotEmpty({ message: 'Username is required' })
   username: string;
 }
 
