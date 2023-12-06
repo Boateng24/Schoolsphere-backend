@@ -7,6 +7,7 @@ import {
   Delete,
   Patch,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { StudentAddressDto, StudentParams } from 'src/Dtos/other-authdtos.dto';
 import { StudentsService } from 'src/services/students/students.service';
@@ -31,6 +32,11 @@ export class StudentsController {
   // @Roles(Role.ADMIN)
   async findallStudents() {
     return this.studentservice.allStudents();
+  }
+
+  @Get('/querystudent')
+  async searchStudent(@Query('name') name: string) {
+    return this.studentservice.searchStudent(name);
   }
 
   @Get('/:studentId')

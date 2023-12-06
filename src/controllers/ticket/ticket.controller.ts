@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { TicketService } from 'src/services/ticket/ticket.service';
 import { TicketDto, TicketParams, TicketUpdateDto } from 'src/Dtos/ticket.dto';
@@ -15,6 +16,7 @@ import { RoleGuard } from 'src/guards/role.guard';
 import { AuthGuard } from 'src/guards/authguard.guard';
 import { Roles } from '../../decorators/role.decorators';
 import { Role } from '../../@types/types';
+import { Status } from '@prisma/client';
 
 @Controller({ path: 'ticket', version: '1' })
 @UseGuards(AuthGuard, RoleGuard)
@@ -67,5 +69,25 @@ export class TicketController {
     @Param() params: TicketParams,
   ) {
     return this.ticketservice.updateTicket(ticket, params);
+  }
+
+  @Get('/ticketbyname')
+  async searchTicketByName(@Query('ticketname') ticketname: string) {
+    return this.ticketservice.searchTicketsByName(ticketname);
+  }
+
+  @Get('/pending/pendingTickets')
+  async pendingTicket() {
+    return this.ticketservice.filterPendingTickets();
+  }
+
+  @Get('/approved/approvedTickets')
+  async approvedTicket() {
+    return this.ticketservice.filterApprovedTickets();
+  }
+
+  @Get('/rejected/rejectedTickets')
+  async rejectedTicket() {
+    return this.ticketservice.filterRejectedTickets();
   }
 }

@@ -16,105 +16,223 @@ export class TicketService {
     private readonly notify: NotificationService,
   ) {}
   async createTicket(ticket: TicketDto, student: StudentParams) {
-    const studentFound = await this.prisma.student.findFirst({
-      where: { rollId: student.studentId },
-    });
-    if (!studentFound) {
-      throw new NotFoundException('User not found');
-    }
-    const newTicket = await this.prisma.tickets.create({
-      data: {
-        ...ticket,
-        ticketStatus: Status.PENDING,
-        studentId: student.studentId,
-      },
-    });
+    try {
+      const studentFound = await this.prisma.student.findFirst({
+        where: { rollId: student.studentId },
+      });
+      if (!studentFound) {
+        throw new NotFoundException('User not found');
+      }
+      const newTicket = await this.prisma.tickets.create({
+        data: {
+          ...ticket,
+          ticketStatus: Status.PENDING,
+          studentId: student.studentId,
+        },
+      });
 
-    const content = `A ticket raised by ${studentFound.firstName} is pending for your approval`;
-    const todo = await this.notify.notifyApprovers(content);
-    console.log(todo);
-    return {
-      ticketRaised: newTicket,
-      notice: todo,
-      message: 'Ticket Raised Successfully',
-    };
+      const content = `A ticket raised by ${studentFound.firstName} is pending for your approval`;
+      const todo = await this.notify.notifyApprovers(content);
+      console.log(todo);
+      return {
+        ticketRaised: newTicket,
+        notice: todo,
+        message: 'Ticket Raised Successfully',
+      };
+    } catch (error) {
+      return { message: 'Error creating a ticket', error };
+    }
   }
 
   async approveTicket(Id: TicketParams) {
-    const approval = await this.prisma.tickets.update({
-      where: {
-        ticketId: Id.ticketId,
-      },
-      data: {
-        ticketStatus: Status.APPROVED,
-      },
-    });
+    try {
+      const approval = await this.prisma.tickets.update({
+        where: {
+          ticketId: Id.ticketId,
+        },
+        data: {
+          ticketStatus: Status.APPROVED,
+        },
+      });
 
-    return { approved: approval, message: 'Ticket Approved Successfully' };
+      return { approved: approval, message: 'Ticket Approved Successfully' };
+    } catch (error) {
+      return { message: 'Error approving a ticket', error };
+    }
   }
 
   async rejectTicket(Id: TicketParams) {
-    const rejection = await this.prisma.tickets.update({
-      where: {
-        ticketId: Id.ticketId,
-      },
-      data: {
-        ticketStatus: Status.REJECTED,
-      },
-    });
+    try {
+      const rejection = await this.prisma.tickets.update({
+        where: {
+          ticketId: Id.ticketId,
+        },
+        data: {
+          ticketStatus: Status.REJECTED,
+        },
+      });
 
-    return { rejected: rejection, message: 'Ticket Rejected' };
+      return { rejected: rejection, message: 'Ticket Rejected' };
+    } catch (error) {
+      return { message: 'Error rejecting a ticket', error };
+    }
   }
 
   async getTicket(Id: TicketParams) {
-    const fetchedTicket = await this.prisma.tickets.findFirst({
-      where: {
-        ticketId: Id.ticketId,
-      },
-    });
-    return { fetchedTicket, message: 'Ticket Fetched Successfully' };
+    try {
+      const fetchedTicket = await this.prisma.tickets.findFirst({
+        where: {
+          ticketId: Id.ticketId,
+        },
+      });
+      return { fetchedTicket, message: 'Ticket Fetched Successfully' };
+    } catch (error) {
+      return { message: 'Error fetching a ticket', error };
+    }
   }
 
   async getAllTickets() {
-    const allTickets = await this.prisma.tickets.findMany({});
-    if (!allTickets) {
-      return { message: 'No tickets found' };
+    try {
+      const allTickets = await this.prisma.tickets.findMany({
+        orderBy: {
+          ticketDate: 'desc',
+        },
+      });
+      if (!allTickets) {
+        return { message: 'No tickets found' };
+      }
+      return { allTickets, message: 'All Tickets Fetched Successfully' };
+    } catch (error) {
+      return { message: 'Error fetching all tickets', error };
     }
-    return { allTickets, message: 'All Tickets Fetched Successfully' };
   }
 
   async deleteTicket(Id: TicketParams) {
-    await this.prisma.tickets.delete({
-      where: {
-        ticketId: Id.ticketId,
-      },
-    });
-    return { message: 'Ticket Deleted Successfully' };
+    try {
+      await this.prisma.tickets.delete({
+        where: {
+          ticketId: Id.ticketId,
+        },
+      });
+      return { message: 'Ticket Deleted Successfully' };
+    } catch (error) {
+      return { message: 'Error deleting a ticket', error };
+    }
   }
 
   async getAllTicketsofStudent(Id: StudentParams) {
-    const studentTickets = await this.prisma.tickets.findMany({
-      where: {
-        studentId: Id.studentId,
-      },
-    });
-    return { studentTickets, message: 'Individual students tickets fetched' };
+    try {
+      const studentTickets = await this.prisma.tickets.findMany({
+        where: {
+          studentId: Id.studentId,
+        },
+        orderBy: {
+          ticketDate: 'desc',
+        },
+      });
+      return {
+        studentTickets,
+        message: 'Individual students tickets fetched',
+      };
+    } catch (error) {
+      return {
+        message: 'Error fetching all tickets of a particular student',
+        error,
+      };
+    }
   }
 
   async allTicketDelete() {
-    await this.prisma.tickets.deleteMany();
-    return { message: 'All tickets deleted' };
+    try {
+      await this.prisma.tickets.deleteMany();
+      return { message: 'All tickets deleted' };
+    } catch (error) {
+      return { message: 'Error deleting all tickets', error };
+    }
   }
 
   async updateTicket(ticket: TicketUpdateDto, Id: TicketParams) {
-    const ticketUpdate = await this.prisma.tickets.update({
-      where: {
-        ticketId: Id.ticketId,
-      },
-      data: {
-        ...ticket,
-      },
-    });
-    return { ticketUpdate, message: 'Ticket updated successfully' };
+    try {
+      const ticketUpdate = await this.prisma.tickets.update({
+        where: {
+          ticketId: Id.ticketId,
+        },
+        data: {
+          ...ticket,
+        },
+      });
+      return { ticketUpdate, message: 'Ticket updated successfully' };
+    } catch (error) {
+      return { message: 'Error updating Tickets', error };
+    }
+  }
+
+  async filterPendingTickets() {
+    try {
+      const PendingTickets = await this.prisma.tickets.findMany({
+        where: {
+          ticketStatus: Status.PENDING,
+        },
+        orderBy: {
+          ticketDate: 'desc',
+        },
+      });
+      return {
+        PendingTickets,
+        messages: 'Pending tickets fetched successfully',
+      };
+    } catch (error) {
+      return { message: 'Error filtering pending tickets', error };
+    }
+  }
+
+  async filterApprovedTickets() {
+    try {
+      const ApprovedTickets = await this.prisma.tickets.findMany({
+        where: {
+          ticketStatus: Status.APPROVED,
+        },
+        orderBy: {
+          ticketDate: 'desc',
+        },
+      });
+      return {
+        ApprovedTickets,
+        messages: 'Approved tickets fetched successfully',
+      };
+    } catch (error) {
+      return { message: 'Error filtering approved tickets', error };
+    }
+  }
+  async filterRejectedTickets() {
+    try {
+      const RejectedTickets = await this.prisma.tickets.findMany({
+        where: {
+          ticketStatus: Status.REJECTED,
+        },
+        orderBy: {
+          ticketDate: 'desc',
+        },
+      });
+      return {
+        RejectedTickets,
+        messages: 'Rejected tickets fetched successfully',
+      };
+    } catch (error) {
+      return { message: 'Error fetching rejected Tickets', error };
+    }
+  }
+
+  async searchTicketsByName(query: string) {
+    try {
+      const searchedTicket = await this.prisma.tickets.findMany({
+        where: {
+          ticketName: { startsWith: query, mode: 'insensitive' },
+        },
+      });
+      return { searchedTicket, message: 'Ticket successfully searched' };
+    } catch (error) {
+      return { message: 'Error Searching for a Ticket', error };
+    }
   }
 }
