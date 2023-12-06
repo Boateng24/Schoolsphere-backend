@@ -24,17 +24,17 @@ export class StudentParams {
 }
 
 export class SchoolClassDto {
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Class type is required' })
   @IsEnum(ClassCategory)
   classType: ClassCategory;
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'School class is required' })
   @IsEnum(ClassType)
   schoolClass: ClassType;
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Student ID is required' })
   studentId: string;
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Teacher ID is required' })
   teacherId: string;
 }
 

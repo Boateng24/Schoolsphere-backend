@@ -14,13 +14,13 @@ export enum Status {
 
 export class TicketDto {
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Ticket name is required' })
   ticketName: string;
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Reason for ticket is required' })
   reason: string;
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Ticket item is required' })
   ticketItem: string;
   @IsDate()
   @IsOptional()

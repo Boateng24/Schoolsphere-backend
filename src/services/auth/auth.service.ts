@@ -49,7 +49,10 @@ export class AuthService {
         },
       });
 
-      return { createdStudent: newStudent };
+      return {
+        createdStudent: newStudent,
+        message: 'Student created successfully',
+      };
     } catch (error) {
       throw new InternalServerErrorException(
         'An error occured while creating a student',
