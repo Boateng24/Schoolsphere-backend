@@ -227,7 +227,7 @@ export class TicketService {
     try {
       const searchedTicket = await this.prisma.tickets.findMany({
         where: {
-          ticketName: { startsWith: query, mode: 'insensitive' },
+          ticketName: { contains: query, mode: 'insensitive' },
         },
       });
       return { searchedTicket, message: 'Ticket successfully searched' };

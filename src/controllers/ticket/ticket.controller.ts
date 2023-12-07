@@ -71,7 +71,7 @@ export class TicketController {
     return this.ticketservice.updateTicket(ticket, params);
   }
 
-  @Get('/ticketbyname')
+  @Get('/name/ticketbyname')
   async searchTicketByName(@Query('ticketname') ticketname: string) {
     return this.ticketservice.searchTicketsByName(ticketname);
   }
