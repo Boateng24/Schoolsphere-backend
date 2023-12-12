@@ -1,9 +1,9 @@
 import {
   Injectable,
   ConflictException,
-  Body,
   NotFoundException,
   InternalServerErrorException,
+  NotAcceptableException,
 } from '@nestjs/common';
 import { PrismaService } from '../../db-prisma/db-prisma/db-prisma.service';
 import { StudentDto, LoginDto } from 'src/Dtos/auth.dto';
@@ -29,6 +29,10 @@ export class AuthService {
       }
 
       const hashedPassword = await bcrypt.hash(student.password, 10);
+
+      if (student.password !== student.confirmPassword) {
+        throw new NotAcceptableException('Password Mismatch');
+      }
 
       const newStudent = await this.prisma.student.create({
         data: {
@@ -61,7 +65,7 @@ export class AuthService {
     }
   }
 
-  async loginStudent(@Body() { username, password }: LoginDto) {
+  async loginStudent({ username, password }: LoginDto) {
     try {
       const foundUser = await this.prisma.student.findFirst({
         where: {

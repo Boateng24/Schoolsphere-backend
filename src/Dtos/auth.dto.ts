@@ -25,12 +25,12 @@ export class StudentDto {
   @IsNotEmpty({ message: 'Username is required' })
   @IsString()
   username: string;
-  @IsNotEmpty()
-  @IsString({ message: 'First name is required' })
+  @IsNotEmpty({ message: 'First name is required' })
+  @IsString()
   firstName: string;
 
-  @IsNotEmpty()
-  @IsString({ message: 'Last name is required' })
+  @IsNotEmpty({ message: 'Last name is required' })
+  @IsString()
   lastName: string;
 
   @IsString()
@@ -44,6 +44,9 @@ export class StudentDto {
   @IsString()
   @MinLength(6)
   password: string;
+
+  @IsNotEmpty({ message: 'Please confirm your password' })
+  confirmPassword: string;
 
   @IsDateString()
   @IsOptional()
@@ -135,12 +138,12 @@ export class StudentDto {
 
 export class LoginDto {
   @IsString()
-  @IsNotEmpty({ message: 'Password is required' })
-  password: string;
-
-  @IsString()
   @IsNotEmpty({ message: 'Username is required' })
   username: string;
+
+  @IsString()
+  @IsNotEmpty({ message: 'Password is required' })
+  password: string;
 }
 
 export class StudentParams {
