@@ -53,8 +53,9 @@ export class AuthService {
         },
       });
 
+      const { password, ...studentData } = newStudent;
       return {
-        createdStudent: newStudent,
+        createdStudent: studentData,
         message: 'Student created successfully',
       };
     } catch (error) {

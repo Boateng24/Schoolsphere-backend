@@ -54,7 +54,6 @@ export class TicketService {
           ticketStatus: Status.APPROVED,
         },
       });
-
       return { approved: approval, message: 'Ticket Approved Successfully' };
     } catch (error) {
       return { message: 'Error approving a ticket', error };
