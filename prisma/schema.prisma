@@ -152,7 +152,7 @@ model Tickets {
   ticketName  String
   reason  String
   ticketItem  String
-  ticketDate  DateTime
+  ticketDate  DateTime? @default(now())
   ticketStatus Status
   student Student @relation(fields: [studentId], references: [rollId], onDelete: Cascade)
   studentId  String
