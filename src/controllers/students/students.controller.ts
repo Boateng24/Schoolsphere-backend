@@ -25,28 +25,28 @@ export class StudentsController {
     @Body() body: StudentAddressDto,
     @Param() params: StudentParams,
   ) {
-    return this.studentservice.createStudentAddress(body, params);
+    return await this.studentservice.createStudentAddress(body, params);
   }
 
   @Get('/allStudents')
   // @Roles(Role.ADMIN)
   async findallStudents() {
-    return this.studentservice.allStudents();
+    return await this.studentservice.allStudents();
   }
 
   @Get('/querystudent')
   async searchStudent(@Query('name') name: string) {
-    return this.studentservice.searchStudent(name);
+    return await this.studentservice.searchStudent(name);
   }
 
   @Get('/:studentId')
   async findStudent(@Param() params: StudentParams) {
-    return this.studentservice.getStudent(params);
+    return await this.studentservice.getStudent(params);
   }
 
   @Delete('/studentAddress/:studentId')
   async deleteStudentAddress(@Param() params: StudentParams) {
-    return this.studentservice.deleteStudentAddress(params);
+    return await this.studentservice.deleteStudentAddress(params);
   }
 
   @Patch('/studentAddress/:studentId')
@@ -54,11 +54,14 @@ export class StudentsController {
     @Param() studentId: StudentParams,
     @Body() addressData: StudentAddressDto,
   ) {
-    return this.studentservice.updateStudentAddress(studentId, addressData);
+    return await this.studentservice.updateStudentAddress(
+      studentId,
+      addressData,
+    );
   }
 
   @Delete('/:studentId')
   async deleteStudent(@Param() params: StudentParams) {
-    return this.studentservice.deleteStudent(params);
+    return await this.studentservice.deleteStudent(params);
   }
 }

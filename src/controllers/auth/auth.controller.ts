@@ -8,11 +8,11 @@ export class AuthController {
   constructor(private readonly authservice: AuthService) {}
   @Post('/createStudent')
   async SingupStudent(@Body() body: StudentDto) {
-    return this.authservice.createStudent(body);
+    return await this.authservice.createStudent(body);
   }
 
   @Post('/loginStudent')
   async loginStudent(@Body() body: LoginDto) {
-    return this.authservice.loginStudent(body);
+    return await this.authservice.loginStudent(body);
   }
 }

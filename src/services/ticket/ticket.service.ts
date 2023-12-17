@@ -99,7 +99,7 @@ export class TicketService {
           ticketDate: 'desc',
         },
       });
-      if (!allTickets) {
+      if (allTickets.length === 0) {
         return { message: 'No tickets found' };
       }
       return { allTickets, message: 'All Tickets Fetched Successfully' };
@@ -121,12 +121,14 @@ export class TicketService {
     }
   }
 
-  async getAllTicketsofStudent(Id: StudentParams) {
+  async getAllTicketsofStudent(Id: StudentParams, limit: number, skip: number) {
     try {
       const studentTickets = await this.prisma.tickets.findMany({
         where: {
           studentId: Id.studentId,
         },
+        take: limit,
+        skip: skip,
         orderBy: {
           ticketDate: 'desc',
         },
