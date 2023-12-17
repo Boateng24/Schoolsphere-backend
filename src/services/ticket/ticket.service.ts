@@ -90,9 +90,11 @@ export class TicketService {
     }
   }
 
-  async getAllTickets() {
+  async getAllTickets(limit: number, skip: number) {
     try {
       const allTickets = await this.prisma.tickets.findMany({
+        take: limit,
+        skip: skip,
         orderBy: {
           ticketDate: 'desc',
         },

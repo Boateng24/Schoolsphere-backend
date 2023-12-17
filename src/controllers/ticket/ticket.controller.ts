@@ -8,6 +8,9 @@ import {
   Post,
   UseGuards,
   Query,
+  Res,
+  HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import { TicketService } from 'src/services/ticket/ticket.service';
 import { TicketDto, TicketParams, TicketUpdateDto } from 'src/Dtos/ticket.dto';
@@ -25,8 +28,30 @@ export class TicketController {
 
   @Get('/allTickets')
   @Roles(Role.ADMIN)
-  async fetchAllTickets() {
-    return this.ticketservice.getAllTickets();
+  async fetchAllTickets(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Res() response,
+  ) {
+    try {
+      const defaultPage = 1;
+      const defaultSize = 10;
+
+      page = page || defaultPage;
+      size = size || defaultSize;
+
+      const limit = parseInt(size as any, 10);
+      const skip = (page - 1) * limit;
+      const alltickets = this.ticketservice.getAllTickets(limit, skip);
+      return response
+        .status(HttpStatus.OK)
+        .json({ page, size, data: alltickets });
+    } catch (error) {
+      throw new HttpException(
+        'Error fetching courses',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('/:studentId')
