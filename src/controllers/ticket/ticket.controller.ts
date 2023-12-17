@@ -42,13 +42,13 @@ export class TicketController {
 
       const limit = parseInt(size as any, 10);
       const skip = (page - 1) * limit;
-      const alltickets = this.ticketservice.getAllTickets(limit, skip);
+      const alltickets = await this.ticketservice.getAllTickets(limit, skip);
       return response
         .status(HttpStatus.OK)
         .json({ page, size, data: alltickets });
     } catch (error) {
       throw new HttpException(
-        'Error fetching courses',
+        'Error fetching all tickets',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -56,36 +56,63 @@ export class TicketController {
 
   @Post('/:studentId')
   async createTicket(@Body() body: TicketDto, @Param() params: StudentParams) {
-    return this.ticketservice.createTicket(body, params);
+    return await this.ticketservice.createTicket(body, params);
   }
 
   @Get('/:ticketId')
   async fetchTicket(@Param() params: TicketParams) {
-    return this.ticketservice.getTicket(params);
+    return await this.ticketservice.getTicket(params);
   }
 
   @Post('/approval/:ticketId')
   async ticketApproval(@Param() params: TicketParams) {
-    return this.ticketservice.approveTicket(params);
+    return await this.ticketservice.approveTicket(params);
   }
 
   @Post('/rejection/:ticketId')
   async ticketRejection(@Param() params: TicketParams) {
-    return this.ticketservice.rejectTicket(params);
+    return await this.ticketservice.rejectTicket(params);
   }
   @Delete('/tickets')
   async ticketsDelete() {
-    return this.ticketservice.allTicketDelete();
+    return await this.ticketservice.allTicketDelete();
   }
 
   @Delete('/:ticketId')
   async deleteTicket(@Param() params: TicketParams) {
-    return this.ticketservice.deleteTicket(params);
+    return await this.ticketservice.deleteTicket(params);
   }
 
   @Get('/tickets/:studentId')
-  async getStudentTickets(@Param() params: StudentParams) {
-    return this.ticketservice.getAllTicketsofStudent(params);
+  async getStudentTickets(
+    @Param() params: StudentParams,
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Res() response,
+  ) {
+    try {
+      const defaultPage = 1;
+      const defaultSize = 10;
+
+      page = page || defaultPage;
+      size = size || defaultSize;
+
+      const limit = parseInt(size as any, 10);
+      const skip = (page - 1) * limit;
+      const studentTicket = await this.ticketservice.getAllTicketsofStudent(
+        params,
+        limit,
+        skip,
+      );
+      return response
+        .status(HttpStatus.OK)
+        .json({ page, size, data: studentTicket });
+    } catch (error) {
+      throw new HttpException(
+        'Error fetching all tickets',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Patch('/:ticketId')
