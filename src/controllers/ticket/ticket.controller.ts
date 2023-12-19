@@ -14,7 +14,11 @@ import {
 } from '@nestjs/common';
 import { TicketService } from 'src/services/ticket/ticket.service';
 import { TicketDto, TicketParams, TicketUpdateDto } from 'src/Dtos/ticket.dto';
-import { StudentParams } from 'src/Dtos/other-authdtos.dto';
+import {
+  StudentParams,
+  TeacherParams,
+  UserParams,
+} from 'src/Dtos/other-authdtos.dto';
 import { RoleGuard } from 'src/guards/role.guard';
 import { AuthGuard } from 'src/guards/authguard.guard';
 import { Roles } from '../../decorators/role.decorators';
@@ -54,9 +58,19 @@ export class TicketController {
     }
   }
 
-  @Post('/:studentId')
-  async createTicket(@Body() body: TicketDto, @Param() params: StudentParams) {
-    return await this.ticketservice.createTicket(body, params);
+  @Post('/:id')
+  async createTicket(
+    @Body() body: TicketDto,
+    @Param('id') studentId: string,
+    @Param('id') teacherId: string,
+    @Param('id') userId: string,
+  ) {
+    return await this.ticketservice.createTicket(
+      body,
+      studentId,
+      teacherId,
+      userId,
+    );
   }
 
   @Get('/:ticketId')

@@ -41,6 +41,7 @@ model Student {
   emergencyContact     String?
   emergencyContactName String?
   ticket               Tickets[]
+  notice               Notification[]
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
 
@@ -54,8 +55,9 @@ model Teacher {
   lastName             String
   middleName           String?
   email                String            @unique
+  password             String
   dateOfBirth          DateTime?
-  contact              String
+  contact              String?
   address              TeacherAddress?
   gender               Gender
   qualification        String?
@@ -66,14 +68,47 @@ model Teacher {
   previousSchool       String?
   yearsOfExperience    Int?
   photo                String?
-  status               TeacherStatus     @default(active)
+  status               UserStatus     @default(active)
   role                 ROLE              @default(teacher)
   biography            String?
-  isAdmin              Boolean           @default(false)
   schoolClass          SchoolClass[]
   student              StudentTeacher[]
   studentRecords       AcademicRecords[]
-  notice               Notification?
+  ticket               Tickets[]
+  notice               Notification[]
+  emergencyContact     String?
+  emergencyContactName String?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  @@index([firstName, lastName, email])
+}
+
+model User {
+  employeeId           String            @id @default(cuid())
+  username             String
+  firstName            String
+  lastName             String
+  middleName           String?
+  email                String            @unique
+  password             String
+  dateOfBirth          DateTime?
+  contact              String?
+  address              UserAddress?
+  gender               Gender
+  qualification        String?
+  specialization       String?
+  employmentDate       DateTime?
+  nationality          String?
+  religion             String?
+  previousSchool       String?
+  yearsOfExperience    Int?
+  photo                String?
+  status               UserStatus     @default(active)
+  role                 ROLE           
+  biography            String?
+  ticket               Tickets[]
+  notice               Notification[]
   emergencyContact     String?
   emergencyContactName String?
   createdAt            DateTime          @default(now())
@@ -116,6 +151,18 @@ model TeacherAddress {
   @@index([GPS, location])
 }
 
+model UserAddress {
+  GPS       String?
+  location  String?
+  user   User  @relation(fields: [userId], references: [employeeId], onDelete: Cascade)
+  userId String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([userId])
+  @@index([GPS, location])
+}
+
 model SchoolClass {
   classType   ClassCategory
   schoolClass ClassType
@@ -154,8 +201,12 @@ model Tickets {
   ticketItem  String
   ticketDate  DateTime? @default(now())
   ticketStatus Status
-  student Student @relation(fields: [studentId], references: [rollId], onDelete: Cascade)
-  studentId  String
+  student Student? @relation(fields: [studentId], references: [rollId], onDelete: Cascade)
+  studentId  String?
+  teacher Teacher? @relation(fields: [teacherId], references: [employeeId], onDelete: Cascade)
+  teacherId String?
+  user User? @relation(fields: [userId], references: [employeeId], onDelete: Cascade)
+  userId String?
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
@@ -169,9 +220,14 @@ enum ClassCategory {
 model Notification {
   id Int @id @default(autoincrement())
   content String
+  link_to_action String
   isRead Boolean @default(false)
-  userId String @unique
-  user  Teacher @relation(fields: [userId], references: [employeeId], onDelete: Cascade)
+  studentId String? 
+  student Student? @relation(fields: [studentId], references: [rollId], onDelete: Cascade)
+  teacherId String? 
+  teacher Teacher? @relation(fields: [teacherId], references: [employeeId], onDelete: Cascade)
+  userId String?
+  user User? @relation(fields: [userId], references: [employeeId], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
@@ -202,7 +258,7 @@ enum StudentStatus {
   deactivated
 }
 
-enum TeacherStatus {
+enum UserStatus {
   active
   onleave
   retired
@@ -218,7 +274,7 @@ enum ROLE {
   student
   teacher
   headmaster
-  proprietro
+  proprietor
   admin
   nonteaching
 }

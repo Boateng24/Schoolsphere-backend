@@ -18,6 +18,11 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { TicketController } from './controllers/ticket/ticket.controller';
 import { TicketService } from './services/ticket/ticket.service';
 import { NotificationService } from './services/notification/notification.service';
+import { NotificationsController } from './controllers/notifications/notifications.controller';
+import { TeachersService } from './services/teachers/teachers.service';
+import { TeachersController } from './controllers/teachers/teachers.controller';
+import { UsersService } from './services/users/users.service';
+import { UsersController } from './controllers/users/users.controller';
 
 @Module({
   imports: [
@@ -46,6 +51,9 @@ import { NotificationService } from './services/notification/notification.servic
     AuthController,
     StudentsController,
     TicketController,
+    NotificationsController,
+    TeachersController,
+    UsersController,
   ],
   providers: [
     AppService,
@@ -56,6 +64,8 @@ import { NotificationService } from './services/notification/notification.servic
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     TicketService,
     NotificationService,
+    TeachersService,
+    UsersService,
   ],
 })
 export class AppModule implements NestModule {

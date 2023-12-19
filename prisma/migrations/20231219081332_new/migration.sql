@@ -11,13 +11,13 @@ CREATE TYPE "Gender" AS ENUM ('male', 'female');
 CREATE TYPE "StudentStatus" AS ENUM ('active', 'graduated', 'droppedout', 'deactivated');
 
 -- CreateEnum
-CREATE TYPE "TeacherStatus" AS ENUM ('active', 'onleave', 'retired');
+CREATE TYPE "UserStatus" AS ENUM ('active', 'onleave', 'retired');
 
 -- CreateEnum
 CREATE TYPE "TERM" AS ENUM ('firstterm', 'secondterm', 'thirdterm');
 
 -- CreateEnum
-CREATE TYPE "ROLE" AS ENUM ('student', 'teacher', 'headmaster', 'proprietro', 'admin', 'nonteaching');
+CREATE TYPE "ROLE" AS ENUM ('student', 'teacher', 'headmaster', 'proprietor', 'admin', 'nonteaching');
 
 -- CreateEnum
 CREATE TYPE "Status" AS ENUM ('Pending', 'Approved', 'Rejected');
@@ -73,7 +73,7 @@ CREATE TABLE "Teacher" (
     "previousSchool" TEXT,
     "yearsOfExperience" INTEGER,
     "photo" TEXT,
-    "status" "TeacherStatus" NOT NULL DEFAULT 'active',
+    "status" "UserStatus" NOT NULL DEFAULT 'active',
     "role" "ROLE" NOT NULL DEFAULT 'teacher',
     "biography" TEXT,
     "isAdmin" BOOLEAN NOT NULL DEFAULT false,
@@ -83,6 +83,37 @@ CREATE TABLE "Teacher" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Teacher_pkey" PRIMARY KEY ("employeeId")
+);
+
+-- CreateTable
+CREATE TABLE "User" (
+    "employeeId" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
+    "middleName" TEXT,
+    "email" TEXT NOT NULL,
+    "dateOfBirth" TIMESTAMP(3),
+    "contact" TEXT NOT NULL,
+    "gender" "Gender" NOT NULL,
+    "qualification" TEXT,
+    "specialization" TEXT,
+    "employmentDate" TIMESTAMP(3),
+    "nationality" TEXT,
+    "religion" TEXT,
+    "previousSchool" TEXT,
+    "yearsOfExperience" INTEGER,
+    "photo" TEXT,
+    "status" "UserStatus" NOT NULL DEFAULT 'active',
+    "role" "ROLE" NOT NULL,
+    "biography" TEXT,
+    "isAdmin" BOOLEAN NOT NULL DEFAULT false,
+    "emergencyContact" TEXT,
+    "emergencyContactName" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("employeeId")
 );
 
 -- CreateTable
@@ -117,6 +148,17 @@ CREATE TABLE "TeacherAddress" (
 );
 
 -- CreateTable
+CREATE TABLE "UserAddress" (
+    "GPS" TEXT,
+    "location" TEXT,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "UserAddress_pkey" PRIMARY KEY ("userId")
+);
+
+-- CreateTable
 CREATE TABLE "SchoolClass" (
     "classType" "ClassCategory" NOT NULL,
     "schoolClass" "ClassType" NOT NULL,
@@ -148,9 +190,11 @@ CREATE TABLE "Tickets" (
     "ticketName" TEXT NOT NULL,
     "reason" TEXT NOT NULL,
     "ticketItem" TEXT NOT NULL,
-    "ticketDate" TIMESTAMP(3) NOT NULL,
+    "ticketDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "ticketStatus" "Status" NOT NULL,
-    "studentId" TEXT NOT NULL,
+    "studentId" TEXT,
+    "teacherId" TEXT,
+    "userId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -161,8 +205,11 @@ CREATE TABLE "Tickets" (
 CREATE TABLE "Notification" (
     "id" SERIAL NOT NULL,
     "content" TEXT NOT NULL,
+    "link_to_action" TEXT NOT NULL,
     "isRead" BOOLEAN NOT NULL DEFAULT false,
-    "userId" TEXT NOT NULL,
+    "studentId" TEXT,
+    "teacherId" TEXT,
+    "userId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -182,6 +229,12 @@ CREATE UNIQUE INDEX "Teacher_email_key" ON "Teacher"("email");
 CREATE INDEX "Teacher_firstName_lastName_email_idx" ON "Teacher"("firstName", "lastName", "email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE INDEX "User_firstName_lastName_email_idx" ON "User"("firstName", "lastName", "email");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "StudentAddress_studentId_key" ON "StudentAddress"("studentId");
 
 -- CreateIndex
@@ -194,13 +247,16 @@ CREATE UNIQUE INDEX "TeacherAddress_teacherId_key" ON "TeacherAddress"("teacherI
 CREATE INDEX "TeacherAddress_GPS_location_idx" ON "TeacherAddress"("GPS", "location");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "UserAddress_userId_key" ON "UserAddress"("userId");
+
+-- CreateIndex
+CREATE INDEX "UserAddress_GPS_location_idx" ON "UserAddress"("GPS", "location");
+
+-- CreateIndex
 CREATE INDEX "SchoolClass_classType_schoolClass_idx" ON "SchoolClass"("classType", "schoolClass");
 
 -- CreateIndex
 CREATE INDEX "AcademicRecords_term_courseName_idx" ON "AcademicRecords"("term", "courseName");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Notification_userId_key" ON "Notification"("userId");
 
 -- AddForeignKey
 ALTER TABLE "StudentTeacher" ADD CONSTRAINT "StudentTeacher_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("rollId") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -213,6 +269,9 @@ ALTER TABLE "StudentAddress" ADD CONSTRAINT "StudentAddress_studentId_fkey" FORE
 
 -- AddForeignKey
 ALTER TABLE "TeacherAddress" ADD CONSTRAINT "TeacherAddress_teacherId_fkey" FOREIGN KEY ("teacherId") REFERENCES "Teacher"("employeeId") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserAddress" ADD CONSTRAINT "UserAddress_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("employeeId") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "SchoolClass" ADD CONSTRAINT "SchoolClass_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("rollId") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -230,4 +289,16 @@ ALTER TABLE "AcademicRecords" ADD CONSTRAINT "AcademicRecords_studentId_fkey" FO
 ALTER TABLE "Tickets" ADD CONSTRAINT "Tickets_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("rollId") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Notification" ADD CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Teacher"("employeeId") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Tickets" ADD CONSTRAINT "Tickets_teacherId_fkey" FOREIGN KEY ("teacherId") REFERENCES "Teacher"("employeeId") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Tickets" ADD CONSTRAINT "Tickets_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("employeeId") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Notification" ADD CONSTRAINT "Notification_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("rollId") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Notification" ADD CONSTRAINT "Notification_teacherId_fkey" FOREIGN KEY ("teacherId") REFERENCES "Teacher"("employeeId") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Notification" ADD CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("employeeId") ON DELETE CASCADE ON UPDATE CASCADE;
