@@ -18,9 +18,36 @@ export class StudentAddressDto {
   location?: string;
 }
 
+export class TeacherAddressDto {
+  @IsString()
+  @IsOptional()
+  GPS?: string;
+
+  @IsString()
+  @IsOptional()
+  location?: string;
+}
+
 export class StudentParams {
   @IsString()
+  @IsOptional()
   studentId: string;
+}
+export class TeacherParams {
+  @IsString()
+  @IsOptional()
+  teacherId: string;
+}
+export class UserParams {
+  @IsString()
+  @IsOptional()
+  userId: string;
+}
+
+export enum RequesterType {
+  Student = 'student',
+  Teacher = 'teacher',
+  Other = 'other',
 }
 
 export class SchoolClassDto {

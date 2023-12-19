@@ -6,7 +6,12 @@ import {
   TicketUpdateDto,
 } from 'src/Dtos/ticket.dto';
 import { PrismaService } from 'src/db-prisma/db-prisma/db-prisma.service';
-import { StudentParams } from 'src/Dtos/other-authdtos.dto';
+import {
+  StudentParams,
+  TeacherParams,
+  UserParams,
+  RequesterType,
+} from 'src/Dtos/other-authdtos.dto';
 import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
@@ -15,28 +20,85 @@ export class TicketService {
     private readonly prisma: PrismaService,
     private readonly notify: NotificationService,
   ) {}
-  async createTicket(ticket: TicketDto, student: StudentParams) {
+  async createTicket(
+    ticket: TicketDto,
+    studentId: string,
+    teacherId: string,
+    userId: string,
+  ) {
     try {
-      const studentFound = await this.prisma.student.findFirst({
-        where: { rollId: student.studentId },
+      let requesterId: string;
+      let requesterType: RequesterType;
+      let foundUser: any;
+
+      // Check for student
+      foundUser = await this.prisma.student.findFirst({
+        where: { rollId: studentId },
       });
-      if (!studentFound) {
+      console.log('Student', foundUser);
+      if (foundUser) {
+        requesterType = RequesterType.Student;
+        requesterId = foundUser['rollId'];
+      }
+
+      // Check for teacher
+      if (!foundUser) {
+        foundUser = await this.prisma.teacher.findFirst({
+          where: { employeeId: teacherId },
+        });
+        console.log('Teacher', foundUser);
+        if (foundUser) {
+          requesterType = RequesterType.Teacher;
+          requesterId = foundUser['employeeId'];
+        }
+      }
+
+      // Check for other user
+      if (!foundUser) {
+        foundUser = await this.prisma.user.findFirst({
+          where: { employeeId: userId },
+        });
+        console.log('User', foundUser);
+        if (foundUser) {
+          requesterType = RequesterType.Other;
+          requesterId = foundUser['employeeId'];
+        }
+      }
+
+      // User not found in any category
+      if (!foundUser) {
         throw new NotFoundException('User not found');
       }
+
+      const ticketData = {
+        ...ticket,
+        ticketStatus: Status.PENDING,
+        studentId: requesterType === RequesterType.Student ? studentId : null,
+        teacherId: requesterType === RequesterType.Teacher ? teacherId : null,
+        userId: requesterType === RequesterType.Other ? userId : null,
+      };
+      ticketData[requesterId] = foundUser[requesterId];
+
+      // Create the ticket
       const newTicket = await this.prisma.tickets.create({
-        data: {
-          ...ticket,
-          ticketStatus: Status.PENDING,
-          studentId: student.studentId,
-        },
+        data: ticketData,
       });
 
-      const content = `A ticket raised by ${studentFound.firstName} is pending for your approval`;
-      const todo = await this.notify.notifyApprovers(content);
-      console.log(todo);
+      // Notify approvers
+      const content = `A ticket raised is pending for your approval`;
+      const link_to_action = '/tickets';
+
+      // Notify approvers with the requester's information
+      const notification = await this.notify.notifyApprovers(
+        content,
+        link_to_action,
+        foundUser[requesterId],
+        requesterType,
+      );
+
       return {
         ticketRaised: newTicket,
-        notice: todo,
+        notice: notification,
         message: 'Ticket Raised Successfully',
       };
     } catch (error) {
