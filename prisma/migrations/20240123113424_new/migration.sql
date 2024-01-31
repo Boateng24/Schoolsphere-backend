@@ -2,6 +2,9 @@
 CREATE TYPE "ClassCategory" AS ENUM ('kindergarten', 'primary', 'jhs');
 
 -- CreateEnum
+CREATE TYPE "Modules" AS ENUM ('Home', 'Dashboard', 'Students', 'Teachers', 'Parents', 'Library', 'Competitions', 'Configurations');
+
+-- CreateEnum
 CREATE TYPE "ClassType" AS ENUM ('kindergarten1', 'kindergarten2', 'primary1', 'primary2', 'primary3', 'primary4', 'primary5', 'primary6', 'jhs1', 'jhs2', 'jhs3');
 
 -- CreateEnum
@@ -62,8 +65,9 @@ CREATE TABLE "Teacher" (
     "lastName" TEXT NOT NULL,
     "middleName" TEXT,
     "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
     "dateOfBirth" TIMESTAMP(3),
-    "contact" TEXT NOT NULL,
+    "contact" TEXT,
     "gender" "Gender" NOT NULL,
     "qualification" TEXT,
     "specialization" TEXT,
@@ -76,7 +80,6 @@ CREATE TABLE "Teacher" (
     "status" "UserStatus" NOT NULL DEFAULT 'active',
     "role" "ROLE" NOT NULL DEFAULT 'teacher',
     "biography" TEXT,
-    "isAdmin" BOOLEAN NOT NULL DEFAULT false,
     "emergencyContact" TEXT,
     "emergencyContactName" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -93,8 +96,9 @@ CREATE TABLE "User" (
     "lastName" TEXT NOT NULL,
     "middleName" TEXT,
     "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
     "dateOfBirth" TIMESTAMP(3),
-    "contact" TEXT NOT NULL,
+    "contact" TEXT,
     "gender" "Gender" NOT NULL,
     "qualification" TEXT,
     "specialization" TEXT,
@@ -107,7 +111,6 @@ CREATE TABLE "User" (
     "status" "UserStatus" NOT NULL DEFAULT 'active',
     "role" "ROLE" NOT NULL,
     "biography" TEXT,
-    "isAdmin" BOOLEAN NOT NULL DEFAULT false,
     "emergencyContact" TEXT,
     "emergencyContactName" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -187,11 +190,11 @@ CREATE TABLE "AcademicRecords" (
 -- CreateTable
 CREATE TABLE "Tickets" (
     "ticketId" SERIAL NOT NULL,
-    "ticketName" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "reason" TEXT NOT NULL,
     "ticketItem" TEXT NOT NULL,
-    "ticketDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
-    "ticketStatus" "Status" NOT NULL,
+    "date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "status" "Status" NOT NULL,
     "studentId" TEXT,
     "teacherId" TEXT,
     "userId" TEXT,

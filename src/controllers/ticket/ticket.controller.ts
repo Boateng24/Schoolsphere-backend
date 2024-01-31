@@ -23,7 +23,7 @@ import { RoleGuard } from 'src/guards/role.guard';
 import { AuthGuard } from 'src/guards/authguard.guard';
 import { Roles } from '../../decorators/role.decorators';
 import { Role } from '../../@types/types';
-import { Status } from '@prisma/client';
+import { Status } from 'src/Dtos/ticket.dto';
 
 @Controller({ path: 'ticket', version: '1' })
 @UseGuards(AuthGuard, RoleGuard)
@@ -97,11 +97,13 @@ export class TicketController {
     return await this.ticketservice.deleteTicket(params);
   }
 
-  @Get('/tickets/:studentId')
+  @Get('/tickets/:studentId/')
   async getStudentTickets(
-    @Param() params: StudentParams,
+    @Param('studentId') studentId: StudentParams,
+    @Query('status') status: Status,
     @Query('page') page: number,
     @Query('size') size: number,
+    @Query('name') name: string,
     @Res() response,
   ) {
     try {
@@ -114,7 +116,9 @@ export class TicketController {
       const limit = parseInt(size as any, 10);
       const skip = (page - 1) * limit;
       const studentTicket = await this.ticketservice.getAllTicketsofStudent(
-        params,
+        studentId,
+        status,
+        name,
         limit,
         skip,
       );
@@ -155,5 +159,10 @@ export class TicketController {
   @Get('/rejected/rejectedTickets')
   async rejectedTicket() {
     return this.ticketservice.filterRejectedTickets();
+  }
+
+  @Get('/filterTickets/:type')
+  async filterTickets(@Param('type') type: string) {
+    return this.ticketservice.filterTickets(type);
   }
 }

@@ -35,7 +35,6 @@ export class TicketService {
       foundUser = await this.prisma.student.findFirst({
         where: { rollId: studentId },
       });
-      console.log('Student', foundUser);
       if (foundUser) {
         requesterType = RequesterType.Student;
         requesterId = foundUser['rollId'];
@@ -46,7 +45,6 @@ export class TicketService {
         foundUser = await this.prisma.teacher.findFirst({
           where: { employeeId: teacherId },
         });
-        console.log('Teacher', foundUser);
         if (foundUser) {
           requesterType = RequesterType.Teacher;
           requesterId = foundUser['employeeId'];
@@ -58,21 +56,18 @@ export class TicketService {
         foundUser = await this.prisma.user.findFirst({
           where: { employeeId: userId },
         });
-        console.log('User', foundUser);
         if (foundUser) {
           requesterType = RequesterType.Other;
           requesterId = foundUser['employeeId'];
         }
       }
-
-      // User not found in any category
       if (!foundUser) {
         throw new NotFoundException('User not found');
       }
 
       const ticketData = {
         ...ticket,
-        ticketStatus: Status.PENDING,
+        status: Status.PENDING,
         studentId: requesterType === RequesterType.Student ? studentId : null,
         teacherId: requesterType === RequesterType.Teacher ? teacherId : null,
         userId: requesterType === RequesterType.Other ? userId : null,
@@ -81,7 +76,7 @@ export class TicketService {
 
       // Create the ticket
       const newTicket = await this.prisma.tickets.create({
-        data: ticketData,
+        data: ticketData as any,
       });
 
       // Notify approvers
@@ -113,7 +108,7 @@ export class TicketService {
           ticketId: Id.ticketId,
         },
         data: {
-          ticketStatus: Status.APPROVED,
+          status: Status.APPROVED,
         },
       });
       return { approved: approval, message: 'Ticket Approved Successfully' };
@@ -129,7 +124,7 @@ export class TicketService {
           ticketId: Id.ticketId,
         },
         data: {
-          ticketStatus: Status.REJECTED,
+          status: Status.REJECTED,
         },
       });
 
@@ -158,7 +153,7 @@ export class TicketService {
         take: limit,
         skip: skip,
         orderBy: {
-          ticketDate: 'desc',
+          date: 'desc',
         },
       });
       if (allTickets.length === 0) {
@@ -183,21 +178,62 @@ export class TicketService {
     }
   }
 
-  async getAllTicketsofStudent(Id: StudentParams, limit: number, skip: number) {
+  // async getAllTicketsofStudent(Id: StudentParams, limit: number, skip: number) {
+  //   try {
+  //     const studentTickets = await this.prisma.tickets.findMany({
+  //       where: {
+  //         studentId: Id.studentId,
+  //       },
+  //       take: limit,
+  //       skip: skip,
+  //       orderBy: {
+  //         ticketDate: 'desc',
+  //       },
+  //     });
+  //     return {
+  //       studentTickets,
+  //       message: 'Individual students tickets fetched',
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       message: 'Error fetching all tickets of a particular student',
+  //       error,
+  //     };
+  //   }
+  // }
+
+  async getAllTicketsofStudent(
+    id: StudentParams,
+    status: Status | null,
+    name: string,
+    limit: number,
+    skip: number,
+  ) {
     try {
+      // Prepare the where clause for the query
+      const whereClause: any = {
+        studentId: id.studentId,
+      };
+      // Convert status to proper case or default to 'all'
+      if (status && Object.values(Status).includes(status)) {
+        whereClause.status = status;
+      }
+
+      if (name) {
+        whereClause.name = { contains: name, mode: 'insensitive' };
+      }
+
       const studentTickets = await this.prisma.tickets.findMany({
-        where: {
-          studentId: Id.studentId,
-        },
+        where: whereClause,
         take: limit,
         skip: skip,
         orderBy: {
-          ticketDate: 'desc',
+          date: 'desc',
         },
       });
       return {
         studentTickets,
-        message: 'Individual students tickets fetched',
+        message: "Individual student's tickets fetched",
       };
     } catch (error) {
       return {
@@ -236,10 +272,10 @@ export class TicketService {
     try {
       const PendingTickets = await this.prisma.tickets.findMany({
         where: {
-          ticketStatus: Status.PENDING,
+          status: Status.PENDING,
         },
         orderBy: {
-          ticketDate: 'desc',
+          date: 'desc',
         },
       });
       return {
@@ -255,10 +291,10 @@ export class TicketService {
     try {
       const ApprovedTickets = await this.prisma.tickets.findMany({
         where: {
-          ticketStatus: Status.APPROVED,
+          status: Status.APPROVED,
         },
         orderBy: {
-          ticketDate: 'desc',
+          date: 'desc',
         },
       });
       return {
@@ -273,10 +309,10 @@ export class TicketService {
     try {
       const RejectedTickets = await this.prisma.tickets.findMany({
         where: {
-          ticketStatus: Status.REJECTED,
+          status: Status.REJECTED,
         },
         orderBy: {
-          ticketDate: 'desc',
+          date: 'desc',
         },
       });
       return {
@@ -292,12 +328,35 @@ export class TicketService {
     try {
       const searchedTicket = await this.prisma.tickets.findMany({
         where: {
-          ticketName: { contains: query, mode: 'insensitive' },
+          name: { contains: query, mode: 'insensitive' },
         },
       });
       return { searchedTicket, message: 'Ticket successfully searched' };
     } catch (error) {
       return { message: 'Error Searching for a Ticket', error };
+    }
+  }
+  async filterTickets(type: string) {
+    try {
+      const statusParam =
+        type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
+
+      // Check if the statusParam is a valid enum value
+      if (!Object.values(Status).includes(statusParam as Status)) {
+        return { message: 'Invalid ticket status' };
+      }
+
+      const filterTickets = await this.prisma.tickets.findMany({
+        where: {
+          status: statusParam as Status,
+        },
+        orderBy: {
+          date: 'desc',
+        },
+      });
+      return { filterTickets, message: 'Tickets filtered successfully' };
+    } catch (error) {
+      return { message: 'Error filtering Tickets', error };
     }
   }
 }
