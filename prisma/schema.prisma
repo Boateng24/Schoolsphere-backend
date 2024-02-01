@@ -196,11 +196,11 @@ model AcademicRecords {
 
 model Tickets {
   ticketId Int @id @default(autoincrement())
-  ticketName  String
+  name  String
   reason  String
-  ticketItem  String
-  ticketDate  DateTime? @default(now())
-  ticketStatus Status
+  item  String
+  date  DateTime? @default(now())
+  status Status
   student Student? @relation(fields: [studentId], references: [rollId], onDelete: Cascade)
   studentId  String?
   teacher Teacher? @relation(fields: [teacherId], references: [employeeId], onDelete: Cascade)
@@ -209,6 +209,7 @@ model Tickets {
   userId String?
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+  @@index([name, ticketId, item])
 }
 
 enum ClassCategory {
@@ -230,6 +231,17 @@ model Notification {
   user User? @relation(fields: [userId], references: [employeeId], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+}
+
+enum Modules {
+  Home
+  Dashboard
+  Students
+  Teachers
+  Parents
+  Library
+  Competitions
+  Configurations
 }
 
 enum ClassType {
@@ -281,7 +293,7 @@ enum ROLE {
 
 
 enum Status {
-  Pending
-  Approved
-  Rejected
+  pending
+  approved
+  rejected
 }
