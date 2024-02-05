@@ -50,14 +50,14 @@ export class TicketParams {
 export class TicketUpdateDto {
   @IsString()
   @IsOptional()
-  ticketName: string;
+  name: string;
   @IsString()
   @IsOptional()
   reason: string;
   @IsString()
   @IsOptional()
-  ticketItem: string;
+  item: string;
   @IsDate()
   @IsOptional()
-  ticketDate: Date;
+  date: Date;
 }
