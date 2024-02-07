@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/db-prisma/db-prisma/db-prisma.service';
 import { RequesterType } from 'src/Dtos/other-authdtos.dto';
+import { TicketParams } from 'src/Dtos/ticket.dto';
 
 @Injectable()
 export class NotificationService {
@@ -8,39 +9,33 @@ export class NotificationService {
 
   async notifyApprovers(
     content: string,
-    link_to_action: string,
     requesterId: string,
     requesterType: RequesterType,
+    ticketId: number,
   ): Promise<object> {
     try {
-      const approvers = await this.prisma.user.findMany({
+      await this.prisma.user.findFirst({
         where: {
           role: 'admin',
         },
       });
-      console.log(approvers.length);
-      for (const _approver of approvers) {
-        const notificationData: any = {
-          content: content,
-          link_to_action: link_to_action,
-        };
+      const notificationData: any = {
+        content: content,
+      };
 
-        // Attach the correct requester ID to the notification data
-        if (requesterType === RequesterType.Student) {
-          notificationData.studentId = requesterId;
-        } else if (requesterType === RequesterType.Teacher) {
-          notificationData.teacherId = requesterId;
-        } else if (requesterType === RequesterType.Other) {
-          notificationData.userId = requesterId;
-        }
-
-        await this.prisma.notification.create({
-          data: notificationData,
-        });
-        console.log('created');
+      // Attach the correct requester ID to the notification data
+      if (requesterType === RequesterType.Student) {
+        notificationData.studentId = requesterId;
+      } else if (requesterType === RequesterType.Teacher) {
+        notificationData.teacherId = requesterId;
+      } else if (requesterType === RequesterType.Other) {
+        notificationData.userId = requesterId;
       }
 
-      return { content, link_to_action };
+      await this.prisma.notification.create({
+        data: notificationData,
+      });
+      return { content, requesterId, requesterType, ticketId };
     } catch (error) {
       throw new InternalServerErrorException(
         'An error occurred while creating a notice',
@@ -57,6 +52,21 @@ export class NotificationService {
         },
       });
       return { allnotice: allNotice, message: 'All notification fetched' };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'An error occured while fetching all notice',
+        error.message,
+      );
+    }
+  }
+  async GetNotification(Id: number) {
+    try {
+      const notifications = await this.prisma.notification.findFirst({
+        where: {
+          ticketId: Id,
+        },
+      });
+      console.log(notifications);
     } catch (error) {
       throw new InternalServerErrorException(
         'An error occured while fetching all notice',

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import {
   Status,
   TicketDto,
@@ -30,7 +34,6 @@ export class TicketService {
       let requesterId: string;
       let requesterType: RequesterType;
       let foundUser: any;
-
       // Check for student
       foundUser = await this.prisma.student.findFirst({
         where: { rollId: studentId },
@@ -72,23 +75,28 @@ export class TicketService {
         teacherId: requesterType === RequesterType.Teacher ? teacherId : null,
         userId: requesterType === RequesterType.Other ? userId : null,
       };
-      ticketData[requesterId] = foundUser[requesterId];
+      // ticketData[requesterId] = foundUser[requesterId];
+      console.log(requesterId);
 
       // Create the ticket
       const newTicket = await this.prisma.tickets.create({
         data: ticketData as any,
       });
 
+      const ticketId = newTicket.ticketId;
       // Notify approvers
-      const content = `A ticket raised is pending for your approval`;
-      const link_to_action = '/tickets';
+      const content = `${foundUser['firstName']} ${
+        foundUser['lastName']
+      } has requested for ${ticket.item} on ${new Date(
+        ticket.date,
+      ).toDateString()} and it's pending your approval`;
 
       // Notify approvers with the requester's information
       const notification = await this.notify.notifyApprovers(
         content,
-        link_to_action,
-        foundUser[requesterId],
+        requesterId,
         requesterType,
+        ticketId,
       );
 
       return {
@@ -103,6 +111,15 @@ export class TicketService {
 
   async approveTicket(Id: TicketParams) {
     try {
+      const approvedTicket = await this.prisma.tickets.findFirst({
+        where: {
+          AND: [{ ticketId: Id.ticketId }, { status: Status.APPROVED }],
+        },
+      });
+
+      if (approvedTicket) {
+        throw new ConflictException('Ticket already approved');
+      }
       const approval = await this.prisma.tickets.update({
         where: {
           ticketId: Id.ticketId,
@@ -111,7 +128,26 @@ export class TicketService {
           status: Status.APPROVED,
         },
       });
-      return { approved: approval, message: 'Ticket Approved Successfully' };
+      const requesterId =
+        approval.studentId || approval.teacherId || approval.userId;
+      if (requesterId) {
+        await this.prisma.notification.updateMany({
+          where: {
+            OR: [
+              { studentId: approval.studentId },
+              { teacherId: approval.teacherId },
+              { userId: approval.userId },
+            ],
+          },
+          data: {
+            isRead: true,
+          },
+        });
+      }
+      return {
+        approved: approval,
+        message: 'Ticket Approved Successfully',
+      };
     } catch (error) {
       return { message: 'Error approving a ticket', error };
     }
@@ -154,6 +190,9 @@ export class TicketService {
         skip: skip,
         orderBy: {
           date: 'desc',
+        },
+        include: {
+          notice: true,
         },
       });
       if (allTickets.length === 0) {

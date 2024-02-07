@@ -207,21 +207,15 @@ model Tickets {
   teacherId String?
   user User? @relation(fields: [userId], references: [employeeId], onDelete: Cascade)
   userId String?
+  notice Notification[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
   @@index([name, ticketId, item])
 }
 
-enum ClassCategory {
-  kindergarten
-  primary
-  jhs
-}
-
 model Notification {
   id Int @id @default(autoincrement())
   content String
-  link_to_action String
   isRead Boolean @default(false)
   studentId String? 
   student Student? @relation(fields: [studentId], references: [rollId], onDelete: Cascade)
@@ -229,10 +223,17 @@ model Notification {
   teacher Teacher? @relation(fields: [teacherId], references: [employeeId], onDelete: Cascade)
   userId String?
   user User? @relation(fields: [userId], references: [employeeId], onDelete: Cascade)
+  ticketId Int?
+  ticket Tickets? @relation(fields: [ticketId], references: [ticketId])
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
 
+enum ClassCategory {
+  kindergarten
+  primary
+  jhs
+}
 enum Modules {
   Home
   Dashboard
