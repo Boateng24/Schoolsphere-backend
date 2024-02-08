@@ -141,28 +141,28 @@ export class TicketController {
     return this.ticketservice.updateTicket(ticket, params);
   }
 
-  @Get('/name/ticketbyname')
-  async searchTicketByName(@Query('ticketname') ticketname: string) {
-    return this.ticketservice.searchTicketsByName(ticketname);
-  }
+  // @Get('/name/ticketbyname')
+  // async searchTicketByName(@Query('ticketname') ticketname: string) {
+  //   return this.ticketservice.searchTicketsByName(ticketname);
+  // }
 
-  @Get('/pending/pendingTickets')
-  async pendingTicket() {
-    return this.ticketservice.filterPendingTickets();
-  }
+  // @Get('/pending/pendingTickets')
+  // async pendingTicket() {
+  //   return this.ticketservice.filterPendingTickets();
+  // }
 
-  @Get('/approved/approvedTickets')
-  async approvedTicket() {
-    return this.ticketservice.filterApprovedTickets();
-  }
+  // @Get('/approved/approvedTickets')
+  // async approvedTicket() {
+  //   return this.ticketservice.filterApprovedTickets();
+  // }
 
-  @Get('/rejected/rejectedTickets')
-  async rejectedTicket() {
-    return this.ticketservice.filterRejectedTickets();
-  }
+  // @Get('/rejected/rejectedTickets')
+  // async rejectedTicket() {
+  //   return this.ticketservice.filterRejectedTickets();
+  // }
 
-  @Get('/filterTickets/:type')
-  async filterTickets(@Param('type') type: string) {
-    return this.ticketservice.filterTickets(type);
-  }
+  // @Get('/filterTickets/:type')
+  // async filterTickets(@Param('type') type: string) {
+  //   return this.ticketservice.filterTickets(type);
+  // }
 }
