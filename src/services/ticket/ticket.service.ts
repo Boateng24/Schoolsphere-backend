@@ -104,8 +104,8 @@ export class TicketService {
         notice: notification,
         message: 'Ticket Raised Successfully',
       };
-    } catch (error) {
-      return { message: 'Error creating a ticket', error };
+    } catch ({ response }) {
+      return response;
     }
   }
 
@@ -148,8 +148,8 @@ export class TicketService {
         approved: approval,
         message: 'Ticket Approved Successfully',
       };
-    } catch (error) {
-      return { message: 'Error approving a ticket', error };
+    } catch ({ response }) {
+      return response;
     }
   }
 
@@ -165,8 +165,8 @@ export class TicketService {
       });
 
       return { rejected: rejection, message: 'Ticket Rejected' };
-    } catch (error) {
-      return { message: 'Error rejecting a ticket', error };
+    } catch ({ response }) {
+      return response;
     }
   }
 
@@ -178,8 +178,8 @@ export class TicketService {
         },
       });
       return { fetchedTicket, message: 'Ticket Fetched Successfully' };
-    } catch (error) {
-      return { message: 'Error fetching a ticket', error };
+    } catch ({ response }) {
+      return response;
     }
   }
 
@@ -199,8 +199,8 @@ export class TicketService {
         return { message: 'No tickets found' };
       }
       return { allTickets, message: 'All Tickets Fetched Successfully' };
-    } catch (error) {
-      return { message: 'Error fetching all tickets', error };
+    } catch ({ response }) {
+      return response;
     }
   }
 
@@ -212,34 +212,10 @@ export class TicketService {
         },
       });
       return { message: 'Ticket Deleted Successfully' };
-    } catch (error) {
-      return { message: 'Error deleting a ticket', error };
+    } catch ({ response }) {
+      return response;
     }
   }
-
-  // async getAllTicketsofStudent(Id: StudentParams, limit: number, skip: number) {
-  //   try {
-  //     const studentTickets = await this.prisma.tickets.findMany({
-  //       where: {
-  //         studentId: Id.studentId,
-  //       },
-  //       take: limit,
-  //       skip: skip,
-  //       orderBy: {
-  //         ticketDate: 'desc',
-  //       },
-  //     });
-  //     return {
-  //       studentTickets,
-  //       message: 'Individual students tickets fetched',
-  //     };
-  //   } catch (error) {
-  //     return {
-  //       message: 'Error fetching all tickets of a particular student',
-  //       error,
-  //     };
-  //   }
-  // }
 
   async getAllTicketsofStudent(
     id: StudentParams,
@@ -274,11 +250,8 @@ export class TicketService {
         studentTickets,
         message: "Individual student's tickets fetched",
       };
-    } catch (error) {
-      return {
-        message: 'Error fetching all tickets of a particular student',
-        error,
-      };
+    } catch ({ response }) {
+      return response;
     }
   }
 
@@ -286,8 +259,8 @@ export class TicketService {
     try {
       await this.prisma.tickets.deleteMany();
       return { message: 'All tickets deleted' };
-    } catch (error) {
-      return { message: 'Error deleting all tickets', error };
+    } catch ({ response }) {
+      return response;
     }
   }
 
@@ -302,64 +275,8 @@ export class TicketService {
         },
       });
       return { ticketUpdate, message: 'Ticket updated successfully' };
-    } catch (error) {
-      return { message: 'Error updating Tickets', error };
-    }
-  }
-
-  async filterPendingTickets() {
-    try {
-      const PendingTickets = await this.prisma.tickets.findMany({
-        where: {
-          status: Status.PENDING,
-        },
-        orderBy: {
-          date: 'desc',
-        },
-      });
-      return {
-        PendingTickets,
-        messages: 'Pending tickets fetched successfully',
-      };
-    } catch (error) {
-      return { message: 'Error filtering pending tickets', error };
-    }
-  }
-
-  async filterApprovedTickets() {
-    try {
-      const ApprovedTickets = await this.prisma.tickets.findMany({
-        where: {
-          status: Status.APPROVED,
-        },
-        orderBy: {
-          date: 'desc',
-        },
-      });
-      return {
-        ApprovedTickets,
-        messages: 'Approved tickets fetched successfully',
-      };
-    } catch (error) {
-      return { message: 'Error filtering approved tickets', error };
-    }
-  }
-  async filterRejectedTickets() {
-    try {
-      const RejectedTickets = await this.prisma.tickets.findMany({
-        where: {
-          status: Status.REJECTED,
-        },
-        orderBy: {
-          date: 'desc',
-        },
-      });
-      return {
-        RejectedTickets,
-        messages: 'Rejected tickets fetched successfully',
-      };
-    } catch (error) {
-      return { message: 'Error fetching rejected Tickets', error };
+    } catch ({ response }) {
+      return response;
     }
   }
 
@@ -399,3 +316,82 @@ export class TicketService {
     }
   }
 }
+
+// async getAllTicketsofStudent(Id: StudentParams, limit: number, skip: number) {
+//   try {
+//     const studentTickets = await this.prisma.tickets.findMany({
+//       where: {
+//         studentId: Id.studentId,
+//       },
+//       take: limit,
+//       skip: skip,
+//       orderBy: {
+//         ticketDate: 'desc',
+//       },
+//     });
+//     return {
+//       studentTickets,
+//       message: 'Individual students tickets fetched',
+//     };
+//   } catch (error) {
+//     return {
+//       message: 'Error fetching all tickets of a particular student',
+//       error,
+//     };
+//   }
+// }
+// async filterPendingTickets() {
+//   try {
+//     const PendingTickets = await this.prisma.tickets.findMany({
+//       where: {
+//         status: Status.PENDING,
+//       },
+//       orderBy: {
+//         date: 'desc',
+//       },
+//     });
+//     return {
+//       PendingTickets,
+//       messages: 'Pending tickets fetched successfully',
+//     };
+//   } catch (error) {
+//     return { message: 'Error filtering pending tickets', error };
+//   }
+// }
+
+// async filterApprovedTickets() {
+//   try {
+//     const ApprovedTickets = await this.prisma.tickets.findMany({
+//       where: {
+//         status: Status.APPROVED,
+//       },
+//       orderBy: {
+//         date: 'desc',
+//       },
+//     });
+//     return {
+//       ApprovedTickets,
+//       messages: 'Approved tickets fetched successfully',
+//     };
+//   } catch (error) {
+//     return { message: 'Error filtering approved tickets', error };
+//   }
+// }
+// async filterRejectedTickets() {
+//   try {
+//     const RejectedTickets = await this.prisma.tickets.findMany({
+//       where: {
+//         status: Status.REJECTED,
+//       },
+//       orderBy: {
+//         date: 'desc',
+//       },
+//     });
+//     return {
+//       RejectedTickets,
+//       messages: 'Rejected tickets fetched successfully',
+//     };
+//   } catch (error) {
+//     return { message: 'Error fetching rejected Tickets', error };
+//   }
+// }
