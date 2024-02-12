@@ -21,6 +21,7 @@ export class NotificationService {
       });
       const notificationData: any = {
         content: content,
+        ticketId: ticketId,
       };
 
       // Attach the correct requester ID to the notification data
@@ -36,10 +37,10 @@ export class NotificationService {
         data: notificationData,
       });
       return { content, requesterId, requesterType, ticketId };
-    } catch (error) {
+    } catch ({ response }) {
       throw new InternalServerErrorException(
         'An error occurred while creating a notice',
-        error.message,
+        response,
       );
     }
   }
@@ -52,10 +53,10 @@ export class NotificationService {
         },
       });
       return { allnotice: allNotice, message: 'All notification fetched' };
-    } catch (error) {
+    } catch ({ response }) {
       throw new InternalServerErrorException(
         'An error occured while fetching all notice',
-        error.message,
+        response,
       );
     }
   }
@@ -67,10 +68,26 @@ export class NotificationService {
         },
       });
       console.log(notifications);
-    } catch (error) {
+    } catch ({ response }) {
       throw new InternalServerErrorException(
         'An error occured while fetching all notice',
-        error.message,
+        response,
+      );
+    }
+  }
+
+  async deleteNotification(Id: number) {
+    try {
+      await this.prisma.notification.delete({
+        where: {
+          id: Id,
+        },
+      });
+      return { message: 'Ticket deleted successfully' };
+    } catch ({ response }) {
+      throw new InternalServerErrorException(
+        'An error occured while fetching all notice',
+        response,
       );
     }
   }

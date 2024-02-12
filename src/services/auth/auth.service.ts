@@ -58,10 +58,10 @@ export class AuthService {
         createdStudent: studentData,
         message: 'Student created successfully',
       };
-    } catch (error) {
+    } catch ({ response }) {
       throw new InternalServerErrorException(
         'An error occured while creating a student',
-        error.message,
+        response,
       );
     }
   }
@@ -106,10 +106,10 @@ export class AuthService {
         createdTeacher: TeacherData,
         message: 'Teacher created successfully',
       };
-    } catch (error) {
+    } catch ({ response }) {
       throw new InternalServerErrorException(
         'An error occured while creating a teacher',
-        error.message,
+        response,
       );
     }
   }
@@ -154,10 +154,10 @@ export class AuthService {
         createdUser: userData,
         message: 'User created successfully',
       };
-    } catch (error) {
+    } catch ({ response }) {
       throw new InternalServerErrorException(
         'An error occured while creating a user',
-        error.message,
+        response,
       );
     }
   }
@@ -225,10 +225,10 @@ export class AuthService {
         accessToken: userToken,
         userRole: role,
       };
-    } catch (error) {
+    } catch ({ response }) {
       throw new InternalServerErrorException(
         'An error occurred while logging in a user',
-        error.message,
+        response,
       );
     }
   }
