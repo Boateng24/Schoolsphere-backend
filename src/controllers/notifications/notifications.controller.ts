@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { NotificationService } from 'src/services/notification/notification.service';
 
 @Controller({ path: 'notifications', version: '1' })
@@ -13,5 +13,10 @@ export class NotificationsController {
   @Get('/:ticketId')
   async getNotification(@Param('ticketId') ticketId: number) {
     return this.notifications.GetNotification(ticketId);
+  }
+
+  @Delete('/:Id')
+  async deleteNotification(@Param('Id') Id: number) {
+    return this.notifications.deleteNotification(Id);
   }
 }

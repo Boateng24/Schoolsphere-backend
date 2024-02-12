@@ -75,8 +75,6 @@ export class TicketService {
         teacherId: requesterType === RequesterType.Teacher ? teacherId : null,
         userId: requesterType === RequesterType.Other ? userId : null,
       };
-      // ticketData[requesterId] = foundUser[requesterId];
-      console.log(requesterId);
 
       // Create the ticket
       const newTicket = await this.prisma.tickets.create({
@@ -155,6 +153,16 @@ export class TicketService {
 
   async rejectTicket(Id: TicketParams) {
     try {
+      const rejectedTicket = await this.prisma.tickets.findFirst({
+        where: {
+          AND: [{ ticketId: Id.ticketId }, { status: Status.REJECTED }],
+        },
+      });
+
+      if (rejectedTicket) {
+        throw new ConflictException('Ticket already rejected');
+      }
+
       const rejection = await this.prisma.tickets.update({
         where: {
           ticketId: Id.ticketId,
@@ -163,6 +171,23 @@ export class TicketService {
           status: Status.REJECTED,
         },
       });
+
+      const requesterId =
+        rejection.studentId || rejection.teacherId || rejection.userId;
+      if (requesterId) {
+        await this.prisma.notification.updateMany({
+          where: {
+            OR: [
+              { studentId: rejection.studentId },
+              { teacherId: rejection.teacherId },
+              { userId: rejection.userId },
+            ],
+          },
+          data: {
+            isRead: true,
+          },
+        });
+      }
 
       return { rejected: rejection, message: 'Ticket Rejected' };
     } catch ({ response }) {

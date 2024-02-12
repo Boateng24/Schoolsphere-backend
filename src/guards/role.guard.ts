@@ -13,11 +13,9 @@ export class RoleGuard implements CanActivate {
   // private readonly logger = new Logger(RoleGuard.name);
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log('RoleGuard canActivate triggered');
     const roles = this.reflector.get<Role[]>('roles', context.getHandler());
     const request = context.switchToHttp().getRequest();
     const user = request?.user;
-    console.log('Current User:', user);
 
     if (!roles) {
       // If no roles are assigned, anyone can access the route
@@ -31,7 +29,6 @@ export class RoleGuard implements CanActivate {
     }
 
     const hasRole = roles.includes(user?.role);
-    console.log('User has required role:', hasRole);
     if (!hasRole) {
       throw new ForbiddenException(
         'You do not have permission to access this resource',
