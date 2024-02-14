@@ -246,8 +246,8 @@ export class TicketService {
     id: StudentParams,
     status: Status | null,
     name: string,
-    limit: number,
-    skip: number,
+    // limit: number,
+    // skip: number,
   ) {
     try {
       // Prepare the where clause for the query
@@ -265,8 +265,8 @@ export class TicketService {
 
       const studentTickets = await this.prisma.tickets.findMany({
         where: whereClause,
-        take: limit,
-        skip: skip,
+        // take: limit,
+        // skip: skip,
         orderBy: {
           date: 'desc',
         },

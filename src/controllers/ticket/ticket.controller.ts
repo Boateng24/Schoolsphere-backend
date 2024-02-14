@@ -101,30 +101,28 @@ export class TicketController {
   async getStudentTickets(
     @Param('studentId') studentId: StudentParams,
     @Query('status') status: Status,
-    @Query('page') page: number,
-    @Query('size') size: number,
+    // @Query('page') page: number,
+    // @Query('size') size: number,
     @Query('name') name: string,
     @Res() response,
   ) {
     try {
-      const defaultPage = 1;
-      const defaultSize = 10;
+      // const defaultPage = 1;
+      // const defaultSize = 10;
 
-      page = page || defaultPage;
-      size = size || defaultSize;
+      // page = page || defaultPage;
+      // size = size || defaultSize;
 
-      const limit = parseInt(size as any, 10);
-      const skip = (page - 1) * limit;
+      // const limit = parseInt(size as any, 10);
+      // const skip = (page - 1) * limit;
       const studentTicket = await this.ticketservice.getAllTicketsofStudent(
         studentId,
         status,
         name,
-        limit,
-        skip,
+        // limit,
+        // skip,
       );
-      return response
-        .status(HttpStatus.OK)
-        .json({ page, size, data: studentTicket });
+      return response.status(HttpStatus.OK).json({ data: studentTicket });
     } catch (error) {
       throw new HttpException(
         'Error fetching all tickets',
